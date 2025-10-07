@@ -1,0 +1,163 @@
+[
+  {
+    "url": "https://www.k1-traunreut.de/programm",
+    "region": "Traunreut",
+    "cities": ["Traunreut"],
+    "event_types": ["Konzerte", "Theater", "Kultur", "Kinderveranstaltungen", "Comedy", "Musik"],
+    "parse": {
+      "type": "html",
+      "start_block_selector": "div[id='gefilterte-events']",
+      "list_selector": "img[src*='eventgroup'] ~ *",
+      "title_selector": "strong, b, h1, h2, h3",
+      "date_selector": "text()[contains(., '2025') or contains(., '2026')]",
+      "location_selector": "text()[contains(., 'k1 Kultur') or contains(., 'Traunreut') or contains(., 'Studio') or contains(., 'Saal')]",
+      "link_selector": "a[href*='reservix']",
+      "pagination": false
+    },
+    "notes": "K1 Kultur- und Veranstaltungszentrum - основная площадка Traunreut, события через Reservix"
+  },
+  {
+    "url": "https://veranstaltungen.traunreut.de/",
+    "region": "Traunreut",
+    "cities": ["Traunreut"],
+    "event_types": ["Alle"],
+    "parse": {
+      "type": "html",
+      "list_selector": ".event, .veranstaltung, .event-item, div[class*='event']",
+      "title_selector": "h1, h2, h3, .title, .headline",
+      "date_selector": ".date, .datum, time",
+      "location_selector": ".location, .ort, .venue",
+      "link_selector": "a",
+      "pagination": false
+    },
+    "notes": "Официальный календарь событий Traunreut"
+  },
+  {
+    "url": "https://www.chiemsee-chiemgau.info/veranstaltungen/",
+    "region": "Chiemsee-Chiemgau",
+    "cities": ["Traunreut", "Traunstein", "Prien", "Seeon", "Seebruck", "Grassau"],
+    "event_types": ["Tourismus", "Feste", "Konzerte", "Brauchtum", "Sport"],
+    "parse": {
+      "type": "html",
+      "list_selector": ".teaser, .event-teaser, .veranstaltung-item, .event-item, article",
+      "title_selector": "h1, h2, h3, .headline, .title",
+      "date_selector": ".date, .datum, time, span[class*='date']",
+      "location_selector": ".location, .ort, .venue, span[class*='location']",
+      "link_selector": "a",
+      "pagination": true
+    },
+    "notes": "Chiemsee-Chiemgau Tourismus - региональные события"
+  },
+  {
+    "url": "https://www.traunstein.de/stadt-leben/kultur/veranstaltungen/",
+    "region": "Traunstein",
+    "cities": ["Traunstein"],
+    "event_types": ["Konzerte", "Festivals", "Ausstellungen", "Stadtfeste"],
+    "parse": {
+      "type": "html",
+      "list_selector": ".teaser, .event-item, article, .content-teaser",
+      "title_selector": "h1, h2, h3, .headline, .title",
+      "date_selector": ".date, .datum, time",
+      "location_selector": ".location, .ort",
+      "link_selector": "a",
+      "pagination": true
+    },
+    "notes": "Официальный сайт Traunstein"
+  },
+  {
+    "url": "https://www.rosenheim.de/kultur/veranstaltungen/veranstaltungskalender.html",
+    "region": "Rosenheim",
+    "cities": ["Rosenheim"],
+    "event_types": ["Konzerte", "Festivals", "Messen", "Theater", "Ausstellungen"],
+    "parse": {
+      "type": "html",
+      "list_selector": ".event, .veranstaltung, .content-item, article",
+      "title_selector": "h1, h2, h3, .title, .headline",
+      "date_selector": ".date, .datum, time",
+      "location_selector": ".location, .ort",
+      "link_selector": "a",
+      "pagination": true
+    },
+    "notes": "Официальный сайт Rosenheim"
+  },
+  {
+    "url": "https://www.eventbrite.de/d/germany--traunreut/events/",
+    "region": "Online-Aggregator",
+    "cities": ["Traunreut", "Traunstein", "Chiemsee", "Umgebung"],
+    "event_types": ["Alle"],
+    "parse": {
+      "type": "html",
+      "list_selector": "article, .event-card-wrapper, .search-event-card-wrapper, [data-testid*='event']",
+      "title_selector": "h3, h2, .event-title, [data-testid*='title']",
+      "date_selector": ".date, .event-date, time, [data-testid*='date']",
+      "location_selector": ".location, .venue, [data-testid*='location']",
+      "link_selector": "a",
+      "pagination": true
+    },
+    "notes": "Eventbrite для региона Traunreut"
+  },
+  {
+    "url": "https://www.eventbrite.de/d/germany--traunstein/events/",
+    "region": "Online-Aggregator",
+    "cities": ["Traunstein", "Traunreut", "Umgebung"],
+    "event_types": ["Alle"],
+    "parse": {
+      "type": "html",
+      "list_selector": "article, .event-card-wrapper, .search-event-card-wrapper, [data-testid*='event']",
+      "title_selector": "h3, h2, .event-title, [data-testid*='title']",
+      "date_selector": ".date, .event-date, time, [data-testid*='date']",
+      "location_selector": ".location, .venue, [data-testid*='location']",
+      "link_selector": "a",
+      "pagination": true
+    },
+    "notes": "Eventbrite для региона Traunstein"
+  },
+  {
+    "url": "https://bavarian-events.com/region/chiemgau/",
+    "region": "Chiemgau",
+    "cities": ["Traunreut", "Traunstein", "Chiemsee", "Umgebung"],
+    "event_types": ["Feste", "Konzerte", "Märkte", "Brauchtum"],
+    "parse": {
+      "type": "html",
+      "list_selector": ".event, .event-item, article, .listing-item",
+      "title_selector": "h2, h3, .title, .event-title",
+      "date_selector": ".date, .event-date, time",
+      "location_selector": ".location, .venue",
+      "link_selector": "a",
+      "pagination": true
+    },
+    "notes": "Bayerische Events Portal für Chiemgau"
+  },
+  {
+    "url": "https://www.muenchen.de/veranstaltungen/umgebung",
+    "region": "München Umgebung",
+    "cities": ["Rosenheim", "Traunstein", "Umgebung"],
+    "event_types": ["Alle"],
+    "parse": {
+      "type": "html",
+      "list_selector": ".event, .veranstaltung, article",
+      "title_selector": "h2, h3, .title",
+      "date_selector": ".date, time",
+      "location_selector": ".location, .venue",
+      "link_selector": "a",
+      "pagination": true
+    },
+    "notes": "Мюнхенские события в окрестностях - может включать наш регион"
+  },
+  {
+    "url": "https://www.meinestadt.de/traunreut/veranstaltungen",
+    "region": "Traunreut",
+    "cities": ["Traunreut"],
+    "event_types": ["Alle"],
+    "parse": {
+      "type": "html",
+      "list_selector": ".ms-item, .event-item, article, .listing-item",
+      "title_selector": "h2, h3, .title, .headline",
+      "date_selector": ".date, .datum, time",
+      "location_selector": ".location, .ort",
+      "link_selector": "a",
+      "pagination": true
+    },
+    "notes": "MeineStadt.de локальные события"
+  }
+]
