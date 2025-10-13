@@ -410,14 +410,13 @@ class TelegramWebhookHandler extends WebhookHandler
         $site = $firstEvent->site ?? null;
         // Добавляем источник если есть
         if ($site) {
-            $title .= PHP_EOL . 'Источник: <a href="http://' . $site . '">' . $site . '</a>' . PHP_EOL;
+            $title .= PHP_EOL . 'Источник: <a href="http://' . $site . '">' . $site . '</a>';
         }
 
         $currentMessage = '<b>' . $title . '</b>';
         if ($page > 1) {
             $currentMessage .= ' (стр. ' . $page . ')';
         }
-        $currentMessage .= PHP_EOL;
 
         $eventsByDate = $events->groupBy(fn($e) => Carbon::parse($e->start_date)->format('Y-m-d'));
 
