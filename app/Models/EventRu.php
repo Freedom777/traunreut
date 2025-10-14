@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EventRu extends Model
 {
@@ -12,4 +13,11 @@ class EventRu extends Model
         'id',
         'title',
     ];
+
+    public $incrementing = false;
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class, 'id', 'id');
+    }
 }

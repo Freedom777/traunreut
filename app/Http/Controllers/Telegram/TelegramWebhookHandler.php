@@ -259,12 +259,6 @@ class TelegramWebhookHandler extends WebhookHandler
                 'page' => $page + 1
             ]
         );
-
-        // Ограничиваем количество сообщений
-        // $messages = array_slice($messages, 0, self::MAX_MESSAGES_PER_CITY);
-
-        // Отправляем сообщения
-        // $this->sendMessages($messages);
     }
 
     /**

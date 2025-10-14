@@ -60,7 +60,7 @@ class ParseCommand extends Command
     protected function parseK1() {
         // Создаем экземпляр контроллера и вызываем метод
         $k1Controller = new ParseK1Controller();
-        $source = [
+        /*$source = [
             'url' => 'https://www.k1-traunreut.de/programm',
             'region' => 'Bayern',
             'site' => 'k1-traunreut.de',
@@ -74,13 +74,13 @@ class ParseCommand extends Command
                 'date_selector' => 'data-date',
                 'category_selector' => 'data-cat',
             ],
-        ];
-        $k1Controller->run($source);
+        ];*/
+        $k1Controller->run();
     }
 
     protected function parseTraunreut() {
         $traunreutController = new TraunreutController();
-        $nowDate = CarbonImmutable::now();
+        /*$nowDate = CarbonImmutable::now();
         $monthLaterDate = $nowDate->addMonth();
         $source = [
             'url' => 'https://veranstaltungen.traunreut.de/traunreut/?form=search&searchType=search&dateFrom=' . $nowDate->format('Y-m-d') . '&dateTo=' . $monthLaterDate->format('Y-m-d') . '&timeFrom=0&latitude=47.955&longitude=12.5715&location=Traunreut&distance=50',
@@ -99,8 +99,8 @@ class ParseCommand extends Command
                 'content_block_selector' => 'div.-IMXEVENT-lazyLoadList__page',
                 'item_selector' => 'article.-IMXEVNT-listElement',
             ],
-        ];
-        $traunreutController->run($source);
+        ];*/
+        $traunreutController->run();
     }
 
     protected function getVocabulary() {
@@ -117,10 +117,13 @@ class ParseCommand extends Command
         $vocRussianAr = file('vocabulary_ru.txt', FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
         $vocabularyAr = array_combine($vocDeutschAr, $vocRussianAr);
         $insertDataAr = [];
+        $nowDate = CarbonImmutable::now()->format('Y-m-d H:i:s');
         foreach ($eventTitles as $eventTitle) {
             $insertDataAr[] = [
                 'id' => $eventTitle->id,
                 'title' => $vocabularyAr[$eventTitle->title],
+                'created_at' => $nowDate,
+                'updated_at' => $nowDate,
             ];
         }
         EventRu::insert($insertDataAr);

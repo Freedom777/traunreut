@@ -34,5 +34,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'telegram' => [
+        'bot_token' => env('BOT_TOKEN_TRAUNREUT_EVENTS'),
+    ],
 ];

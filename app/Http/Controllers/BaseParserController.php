@@ -28,8 +28,29 @@ abstract class BaseParserController extends Controller
     protected int $successCount = 0;
     protected int $eventCount = 0;
 
+    protected string $configPath = '';
+    protected array $parseConfig = [];
+
     public function __construct()
     {
+        if (!$this->configPath) {
+            Log::error('Config path not set');
+            exit();
+        }
+
+        $this->parseConfig = config($this->configPath);
+
+        if (!$this->parseConfig) {
+            Log::error('Config is corrupted.');
+            exit();
+        }
+
+        if (!empty($this->parseConfig['site'])) {
+            $this->processedEvents = Event::where('site', $this->parseConfig['site'])
+                ->pluck('event_id')
+                ->toArray();
+        }
+
         $this->client = new HttpBrowser(HttpClient::create([
             'timeout' => 30,
             'headers' => [
@@ -86,7 +107,30 @@ abstract class BaseParserController extends Controller
         return $text !== '' ? $text : null;
     }
 
+    protected function checkExistEvent(int $eventId): bool
+    {
+        if (in_array($eventId, $this->processedEvents)) {
+            return true;
+        }
+        $this->processedEvents[] = $eventId;
+        return false;
+    }
+
     protected function isEventDuplicate(array $event): bool
+    {
+        $hash = $event['site'] . '_' . $event['event_id'];
+
+        if (in_array($hash, $this->processedEvents)) {
+            return true;
+        }
+
+        $this->processedEvents[] = $hash;
+        return Event::where('site', $event['site'])
+            ->where('event_id', $event['event_id'])
+            ->exists();
+    }
+
+    protected function isEventDuplicateOld(array $event): bool
     {
         $hash = md5(strtolower($event['title'] . $event['start_date'] . $event['location']));
 
