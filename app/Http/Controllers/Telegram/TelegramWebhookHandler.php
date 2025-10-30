@@ -15,6 +15,7 @@ use Illuminate\Support\Stringable;
 class TelegramWebhookHandler extends WebhookHandler
 {
     private const MAX_MESSAGE_LENGTH = 4000;
+    private const ALL_CITIES = 'all';
 
     protected function setupChat(): void
     {
@@ -40,13 +41,12 @@ class TelegramWebhookHandler extends WebhookHandler
     protected function handleChatMessage(Stringable $text): void
     {
         match ($text->toString()) {
-            'Старт', '/start' => $this->sendMainMenu(),
+            'Старт', '/start', '◀️ Назад' => $this->sendMainMenu(),
             '📅 По дате' => $this->sendDateMenu(),
             '🏙️ По городу' => $this->sendCityList(),
             'Сегодня' => $this->sendEventsWithCityFilter('today'),
             'Завтра' => $this->sendEventsWithCityFilter('tomorrow'),
             'Неделя' => $this->sendEventsWithCityFilter('week'),
-            '◀️ Назад' => $this->sendMainMenu(),
             default => $this->sendWelcomeMessage(),
         };
     }
@@ -62,7 +62,7 @@ class TelegramWebhookHandler extends WebhookHandler
         } else {
             $period = $this->data->get('period');
             $city = $this->data->get('city');
-            $showAll = $city === 'all';
+            $showAll = $city === self::ALL_CITIES;
             $this->sendEventsWithCityFilter($period, $city, $showAll, $page);
         }
     }
@@ -107,7 +107,7 @@ class TelegramWebhookHandler extends WebhookHandler
     {
         $period = $this->data->get('period');
         $city = $this->data->get('city');
-        $showAll = $city === 'all';
+        $showAll = $city === self::ALL_CITIES;
 
         $this->sendEventsWithCityFilter($period, $city, $showAll);
     }
@@ -180,7 +180,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
             if (empty($cities)) {
                 $this->chat->message('Города не найдены в базе данных.')
-                    ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back')->get())
+                    ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back'))
                     ->send();
                 return;
             }
@@ -229,15 +229,19 @@ class TelegramWebhookHandler extends WebhookHandler
         $now = Carbon::now();
         $startDate = $now->copy()->startOfDay();
 
-        $events = Event::with('translation')
-            ->where('city', $city)
+        $query = Event::with('translation')
             ->where('start_date', '>=', $startDate)
-            ->orderBy('start_date', 'asc')
-            ->get();
+            ->orderBy('start_date', 'asc');
+
+        if ($city !== self::ALL_CITIES) {
+            $query->where('city', $city);
+        }
+
+        $events = $query->get();
 
         if ($events->isEmpty()) {
-            $this->chat->message('События в городе "' . $city . '" не найдены.')
-                ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back')->get())
+            $this->chat->message('События в ' . ($city == self::ALL_CITIES ? 'городах' : 'городе ' . '"' . $city . '"') . ' не найдены.')
+                ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back'))
                 ->send();
             return;
         }
@@ -245,9 +249,10 @@ class TelegramWebhookHandler extends WebhookHandler
         // Формируем сообщения с событиями
         $result = $this->formatEventsMessages(
             $events,
-            'События в городе ' . $city,
+            'События в ' . ($city == self::ALL_CITIES ? 'городах' : 'городе ' . $city),
             $languageCode,
-            $page
+            $page,
+            false  // НЕ показываем город в событиях (режим "по городу")
         );
 
         $this->sendPaginatedMessage(
@@ -276,10 +281,6 @@ class TelegramWebhookHandler extends WebhookHandler
         $now = Carbon::now();
 
         [$startDate, $endDate] = match ($period) {
-            'today' => [
-                $now->copy()->startOfDay(),
-                $now->copy()->endOfDay()
-            ],
             'tomorrow' => [
                 $now->copy()->addDay()->startOfDay(),
                 $now->copy()->addDay()->endOfDay()
@@ -301,13 +302,13 @@ class TelegramWebhookHandler extends WebhookHandler
 
         if ($events->isEmpty()) {
             $this->chat->message('События не найдены.')
-                ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back')->get())
+                ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back'))
                 ->send();
             return;
         }
 
         // Фильтруем по городу
-        if ($city && $city !== 'all') {
+        if ($city && $city !== self::ALL_CITIES) {
             $events = $events->where('city', $city);
         }
 
@@ -321,7 +322,7 @@ class TelegramWebhookHandler extends WebhookHandler
             $keyboard->button('🌍 Все города')
                 ->action('filterPeriod')
                 ->param('period', $period)
-                ->param('city', 'all');
+                ->param('city', self::ALL_CITIES);
 
             // Кнопки городов
             $row = [];
@@ -341,7 +342,6 @@ class TelegramWebhookHandler extends WebhookHandler
                 $keyboard->row($row);
             }
 
-            // Кнопка "Назад"
             $keyboard->button('◀️ Назад')->action('back');
 
             $this->chat->message('Выберите город или посмотрите все события:')
@@ -350,22 +350,27 @@ class TelegramWebhookHandler extends WebhookHandler
             return;
         }
 
-        // Формируем заголовок периода
-        $titleDate = $this->formatPeriodTitle($startDate, $endDate, $city, $languageCode);
+        // Формируем заголовок периода (БЕЗ даты, только описание периода)
+        $titleDate = $this->formatPeriodTitle($startDate, $endDate, $city, $languageCode, false);
 
-        $result = $this->formatEventsMessages($events, $titleDate, $languageCode, $page);
+        $result = $this->formatEventsMessages(
+            $events,
+            $titleDate,
+            $languageCode,
+            $page,
+            true  // Показываем город жирным в событиях (режим "по дате")
+        );
 
         $this->sendPaginatedMessage(
             $result['message'],
             $result['hasMore'],
             [
-                'type' => 'city',
-                'city' => $city,
+                'type' => 'period',
+                'period' => $period,
+                'city' => $city ?? self::ALL_CITIES,
                 'page' => $page + 1
             ]
         );
-
-        // $this->sendMessages($messages);
     }
 
     /**
@@ -375,10 +380,29 @@ class TelegramWebhookHandler extends WebhookHandler
         Carbon $startDate,
         Carbon $endDate,
         ?string $city,
-        string $languageCode
+        string $languageCode,
+        bool $includeDate = true
     ): string {
         Carbon::setLocale($languageCode);
 
+        // Для режима "по дате" не добавляем дату в заголовок (она будет в теле)
+        if (!$includeDate) {
+            $title = 'События';
+
+            if ($startDate->isSameDay($endDate)) {
+                // Одиночная дата - описание не нужно
+            } else {
+                $title .= ' на период';
+            }
+
+            if ($city && $city !== self::ALL_CITIES) {
+                $title .= ' (' . $city . ')';
+            }
+
+            return $title;
+        }
+
+        // Для режима "по городу" оставляем дату в заголовке
         if ($startDate->isSameDay($endDate)) {
             $title = $startDate->translatedFormat('d.m.Y (l)');
         } else {
@@ -388,20 +412,21 @@ class TelegramWebhookHandler extends WebhookHandler
                 $endDate->translatedFormat('d.m.Y (l)');
         }
 
-        if ($city && $city !== 'all') {
+        if ($city && $city !== self::ALL_CITIES) {
             $title .= ' (' . $city . ')';
         }
 
         return $title;
     }
 
-    private function formatEventsMessages($events, string $title, string $languageCode = 'ru', int $page = 1): array
+    private function formatEventsMessages($events, string $title, string $languageCode = 'ru', int $page = 1, bool $showCityInEvents = false): array
     {
         Carbon::setLocale($languageCode);
 
-        // Получаем первое событие для источника (все события в один день из одного источника)
+        // Получаем первое событие для источника
         $firstEvent = $events->first();
         $site = $firstEvent->site ?? null;
+
         // Добавляем источник если есть
         if ($site) {
             $title .= PHP_EOL . 'Источник: <a href="http://' . $site . '">' . $site . '</a>';
@@ -419,25 +444,31 @@ class TelegramWebhookHandler extends WebhookHandler
         foreach ($eventsByDate as $dateKey => $dateEvents) {
             $date = Carbon::parse($dateKey);
 
-            $dateHeader = '<b>' . $date->translatedFormat('d.m.Y (l)');
-            if ($firstEvent->city) {
-                $dateHeader .= ' (' . $firstEvent->city . ')';
-            }
-            $dateHeader .= '</b>'; // . PHP_EOL;
+            $dateHeader = '<b>' . $date->translatedFormat('d.m.Y (l)') . '</b>';
 
             $eventsByTime = $dateEvents->groupBy(fn($e) => Carbon::parse($e->start_date)->format('H:i'));
 
             foreach ($eventsByTime as $time => $timeEvents) {
-                $timeStr = $time === '00:00' ? 'Целый день' : $time;
-                $timeBlock = '<b>' . $timeStr . '</b>'; //  . PHP_EOL
+                $timeStr = $time === '00:00' ? 'Весь день' : $time;
+                $timeBlock = '<b>' . $timeStr . '</b>';
 
                 foreach ($timeEvents as $event) {
-                    $loc = $event->location ?: $event->city;
                     $titleRu = $event->translation?->title ?? $event->title;
-                    // '•'
+
+                    // Формируем локацию с городом
+                    if ($showCityInEvents) {
+                        // Режим "по дате" - показываем город жирным
+                        $location = $event->location
+                            ? $event->location . ', <b>' . $event->city . '</b>'
+                            : '<b>' . $event->city . '</b>';
+                    } else {
+                        // Режим "по городу" - город не показываем
+                        $location = $event->location ?: $event->city;
+                    }
+
                     $line = $event->link
-                        ? ' <a href="' . $event->link . '">' . htmlspecialchars($titleRu) . '</a> (' . $loc . ')'
-                        : ' ' . htmlspecialchars($titleRu) . ' (' . $loc . ')';
+                        ? '<a href="' . $event->link . '">' . htmlspecialchars($titleRu) . '</a> (' . $location . ')'
+                        : htmlspecialchars($titleRu) . ' (' . $location . ')';
 
                     $allLines[] = [
                         'date' => $dateHeader,
@@ -462,28 +493,28 @@ class TelegramWebhookHandler extends WebhookHandler
         foreach ($paginated as $item) {
             // Добавляем дату только если она изменилась
             if ($lastDate !== $item['date']) {
-                if (mb_strlen($currentMessage . $item['date']) > self::MAX_MESSAGE_LENGTH) {
+                if (mb_strlen($currentMessage . PHP_EOL . PHP_EOL . $item['date']) > self::MAX_MESSAGE_LENGTH) {
                     break;
                 }
-                $currentMessage .= PHP_EOL . PHP_EOL . $item['date']; // Убрали лишний \n
+                $currentMessage .= PHP_EOL . PHP_EOL . $item['date'];
                 $lastDate = $item['date'];
                 $lastTime = null;
             }
 
             // Добавляем время только если оно изменилось
             if ($lastTime !== $item['time']) {
-                if (mb_strlen($currentMessage . $item['time']) > self::MAX_MESSAGE_LENGTH) {
+                if (mb_strlen($currentMessage . PHP_EOL . $item['time']) > self::MAX_MESSAGE_LENGTH) {
                     break;
                 }
-                $currentMessage .= PHP_EOL . $item['time']; // Один перенос строки
+                $currentMessage .= PHP_EOL . $item['time'];
                 $lastTime = $item['time'];
             }
 
-            // Добавляем событие
-            if (mb_strlen($currentMessage . $item['event']) > self::MAX_MESSAGE_LENGTH) {
+            // Добавляем событие с переносом строки
+            if (mb_strlen($currentMessage . PHP_EOL . ' ' . $item['event']) > self::MAX_MESSAGE_LENGTH) {
                 break;
             }
-            $currentMessage .= $item['event'];
+            $currentMessage .= PHP_EOL . ' ' . $item['event'];
         }
 
         $hasMore = $endIndex < count($allLines);
@@ -584,7 +615,7 @@ class TelegramWebhookHandler extends WebhookHandler
         } else {
             $period = $this->data->get('period');
             $city = $this->data->get('city');
-            $showAll = $city === 'all';
+            $showAll = $city === self::ALL_CITIES;
             $this->sendEventsWithCityFilter($period, $city, $showAll, $page);
         }
     }

@@ -131,9 +131,12 @@ class TraunreutController extends BaseParserController
             $category = $this->filterNodeText($node, $sourceParse['category_selector']);
             $infoText = $this->filterNodeText($node, $sourceParse['info_selector']);
             $description = $this->filterNodeText($node, $sourceParse['description_selector']);
-
             $dates = $this->parseDateTime($infoText);
-            $city = $this->parseCity($this->parseLocation($infoText));
+
+            $location = $this->parseLocation($infoText);
+            // Removing city from location
+            $city = $this->parseCity($location);
+
             $eventTypes = $this->determineEventTypes($category, $title, $description);
             $currentDate = date('Y-m-d H:i:s');
 
@@ -146,7 +149,7 @@ class TraunreutController extends BaseParserController
                 'img' => $this->extractImage($node),
                 'start_date' => $dates['start'],
                 'end_date' => $dates['end'],
-                'location' => $this->parseLocation($infoText),
+                'location' => $location,
                 'link' => $this->extractLink($node),
                 'region' => $this->region,
                 'city' => $city,
@@ -247,14 +250,15 @@ class TraunreutController extends BaseParserController
     /**
      * Извлечение городов из локации
      */
-    private function parseCity(?string $location = null): ?string
+    private function parseCity(?string &$location = null): ?string
     {
         if (empty($location)) {
             return null;
         }
 
-        $parts = explode(',', $location);
-        $city = trim(end($parts));
+        $parts = array_map('trim', explode(',', $location));
+        $city = array_pop($parts);
+        $location = implode(', ', $parts);
 
         // Проверяем точное совпадение
         foreach (self::KNOWN_CITIES as $knownCity) {
