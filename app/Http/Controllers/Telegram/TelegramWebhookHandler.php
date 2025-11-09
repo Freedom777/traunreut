@@ -229,7 +229,7 @@ class TelegramWebhookHandler extends WebhookHandler
         $now = Carbon::now();
         $startDate = $now->copy()->startOfDay();
 
-        $query = Event::with('translation')
+        $query = Event::with('titles')
             ->where('start_date', '>=', $startDate)
             ->orderBy('start_date', 'asc');
 
@@ -295,7 +295,7 @@ class TelegramWebhookHandler extends WebhookHandler
             ]
         };
 
-        $events = Event::with('translation')
+        $events = Event::with('titles')
             ->whereBetween('start_date', [$startDate, $endDate])
             ->orderBy('start_date', 'asc')
             ->get();
@@ -453,7 +453,7 @@ class TelegramWebhookHandler extends WebhookHandler
                 $timeBlock = '<b>' . $timeStr . '</b>';
 
                 foreach ($timeEvents as $event) {
-                    $titleRu = $event->translation?->title ?? $event->title;
+                    $titleRu = $event->titles?->title_ru ?? $event->titles?->title_de;
 
                     // Формируем локацию с городом
                     if ($showCityInEvents) {

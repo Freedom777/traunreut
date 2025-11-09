@@ -121,12 +121,13 @@ class TraunreutController extends BaseParserController
             }
 
             $sourceParse = $this->parseConfig['parse'];
-            $title = $this->filterNodeText($node, $sourceParse['title_selector']);
+            $title = $this->cleanText($this->filterNodeText($node, $sourceParse['title_selector']));
             if (empty($title)) {
                 $this->log('Ошибка: Отсутствует наименование события с id = ' . $eventId, 'ERROR');
                 ++$this->errorCount;
                 return null;
             }
+            $events_ru_id = $this->getEventRuIdByTitle($title);
 
             $category = $this->filterNodeText($node, $sourceParse['category_selector']);
             $infoText = $this->filterNodeText($node, $sourceParse['info_selector']);
@@ -141,11 +142,11 @@ class TraunreutController extends BaseParserController
             $currentDate = date('Y-m-d H:i:s');
 
             $eventRec = [
+                'events_ru_id' => $events_ru_id,
                 'site' => $this->parseConfig['site'],
                 'event_id' => $eventId,
                 'category' => $category ?: null,
                 'artist' => null, // В данном HTML нет информации об артистах
-                'title' => $this->cleanText($title),
                 'img' => $this->extractImage($node),
                 'start_date' => $dates['start'],
                 'end_date' => $dates['end'],

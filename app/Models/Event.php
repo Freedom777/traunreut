@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Event extends Model
 {
     protected $fillable = [
+        'events_ru_id',
         'site',
         'event_id',
         'category',
@@ -34,10 +35,10 @@ class Event extends Model
     ];
 
     /**
-     * Связь с переводом на русский язык
+     * Получить заголовки
      */
-    public function translation(): HasOne
+    public function titles(): BelongsTo
     {
-        return $this->hasOne(EventRu::class, 'id', 'id');
+        return $this->belongsTo(EventRu::class, 'events_ru_id');
     }
 }

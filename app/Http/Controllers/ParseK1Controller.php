@@ -35,6 +35,7 @@ class ParseK1Controller extends BaseParserController
                     $sourceParse = $this->parseConfig['parse'];
 
                     $title = $this->cleanText($event->attr($sourceParse['title_selector']));
+                    $events_ru_id = $this->getEventRuIdByTitle($title);
                     $artist = $this->cleanText($event->attr($sourceParse['artist_selector']));
                     $date = $this->cleanText($event->attr($sourceParse['date_selector']));
                     $category = $this->cleanText($event->attr($sourceParse['category_selector']));
@@ -57,11 +58,11 @@ class ParseK1Controller extends BaseParserController
                     $currentDate = date('Y-m-d H:i:s');
 
                     $eventRec = [
+                        'events_ru_id' => $events_ru_id,
                         'site' => $this->parseConfig['site'],
                         'event_id' => $eventId,
                         'category' => $category,
                         'artist' => $artist,
-                        'title' => $title,
                         'img' => $imgSrc,
                         'start_date' => $dt ? $dt->format('Y-m-d H:i:s') : NULL,
                         'end_date' => null,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\EventRu;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\BrowserKit\HttpBrowser;
@@ -166,5 +167,17 @@ abstract class BaseParserController extends Controller
             ->filter($selector)
             ->first()
             ->text(default: '');
+    }
+
+    protected function getEventRuIdByTitle(string $title): int
+    {
+        $events_ru_id = EventRu::where('title_de', $title)->value('id');
+        if (!$events_ru_id) {
+            $eventsRu = new EventRu();
+            $eventsRu->title_de = $title;
+            $eventsRu->save();
+            $events_ru_id = $eventsRu->id;
+        }
+        return $events_ru_id;
     }
 }

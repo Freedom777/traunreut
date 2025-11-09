@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EventRu extends Model
 {
@@ -11,13 +11,15 @@ class EventRu extends Model
 
     protected $fillable = [
         'id',
-        'title',
+        'title_ru',
+        'title_de'
     ];
 
-    public $incrementing = false;
-
-    public function event(): BelongsTo
+    /**
+     * Получить все события, использующие этот перевод
+     */
+    public function events(): HasMany
     {
-        return $this->belongsTo(Event::class, 'id', 'id');
+        return $this->hasMany(Event::class, 'events_ru_id');
     }
 }
