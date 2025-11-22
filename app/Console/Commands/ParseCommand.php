@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Http\Controllers\ParseK1Controller;
 use App\Http\Controllers\TraunreutController;
+use App\Http\Controllers\TraunsteinController;
 use App\Models\Event;
 use App\Models\EventRu;
 use Carbon\CarbonImmutable;
@@ -16,7 +17,7 @@ class ParseCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'parse:site {--site=}';
+    protected $signature = 'parse:site {--site=} {--local} {--debug}';
 
     /**
      * The console command description.
@@ -42,9 +43,13 @@ class ParseCommand extends Command
             case 'k1':
                 $this->parseK1();
             break;
+            case 'traunstein':
+                $this->parseTraunstein();
+            break;
             case 'all':
                 $this->parseTraunreut();
                 $this->parseK1();
+                $this->parseTraunstein();
             break;
             case 'vocabulary':
                 $this->getVocabulary();
@@ -60,6 +65,13 @@ class ParseCommand extends Command
     protected function parseK1() {
         // Создаем экземпляр контроллера и вызываем метод
         $k1Controller = new ParseK1Controller();
+        if ($this->option('local')) {
+            $k1Controller->setLocalMode(true);
+        }
+        if ($this->option('debug')) {
+            $k1Controller->setDebugMode(true);
+        }
+
         /*$source = [
             'url' => 'https://www.k1-traunreut.de/programm',
             'region' => 'Bayern',
@@ -80,6 +92,12 @@ class ParseCommand extends Command
 
     protected function parseTraunreut() {
         $traunreutController = new TraunreutController();
+        if ($this->option('local')) {
+            $traunreutController->setLocalMode(true);
+        }
+        if ($this->option('debug')) {
+            $traunreutController->setDebugMode(true);
+        }
         /*$nowDate = CarbonImmutable::now();
         $monthLaterDate = $nowDate->addMonth();
         $source = [
@@ -101,6 +119,17 @@ class ParseCommand extends Command
             ],
         ];*/
         $traunreutController->run();
+    }
+
+    protected  function parseTraunstein() {
+        $traunsteinController = new TraunsteinController();
+        if ($this->option('local')) {
+            $traunsteinController->setLocalMode(true);
+        }
+        if ($this->option('debug')) {
+            $traunsteinController->setDebugMode(true);
+        }
+        $traunsteinController->run();
     }
 
     protected function getVocabulary() {

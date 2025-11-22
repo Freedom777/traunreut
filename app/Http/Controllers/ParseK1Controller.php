@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\EventRu;
 use DateTime;
 use Exception;
 use Illuminate\Support\Str;
@@ -15,6 +16,11 @@ class ParseK1Controller extends BaseParserController
         $this->log('Начинаем парсинг: ' . $this->parseConfig['url']);
 
         try {
+            if (!$this->isLocalMode()) {
+                $this->getProcessedIdEvents();
+                $this->getProcessedHashEvents();
+            }
+
             $crawler = $this->client->request('GET', $this->parseConfig['url']);
 
             if ($this->parseConfig['parse']['start_block_selector']) {
@@ -27,7 +33,7 @@ class ParseK1Controller extends BaseParserController
                     ++$this->eventCount;
                     $link = $this->cleanText($event->filter('a')->last()->attr('href'));
                     $eventId = (int) Str::afterLast($link, '/');
-                    if ($this->checkExistEvent($eventId)) {
+                    if ($this->checkExistEventById($eventId)) {
                         ++$this->duplicateCount;
                         return null;
                     }
@@ -35,16 +41,10 @@ class ParseK1Controller extends BaseParserController
                     $sourceParse = $this->parseConfig['parse'];
 
                     $title = $this->cleanText($event->attr($sourceParse['title_selector']));
-                    $events_ru_id = $this->getEventRuIdByTitle($title);
-                    $artist = $this->cleanText($event->attr($sourceParse['artist_selector']));
                     $date = $this->cleanText($event->attr($sourceParse['date_selector']));
-                    $category = $this->cleanText($event->attr($sourceParse['category_selector']));
-
                     $customDataSelector = 'p.text-gray-600.leading-relaxed';
                     $customData = $event->filter($customDataSelector);
-                    $location = $this->cleanText($customData->eq(2)->text());
                     $time = $this->cleanText($customData->eq(0)->text());
-
                     $checkTime = preg_match('#(\d{1,2}:\d{2}) Uhr#', $time, $matches);
                     if ($checkTime) {
                         $date .= ' ' . $matches[1];
@@ -52,9 +52,22 @@ class ParseK1Controller extends BaseParserController
                     } else {
                         $dt = DateTime::createFromFormat('d.m.Y', $date);
                     }
+                    $startDate = $dt ? $dt->format('Y-m-d H:i:s') : NULL;
+
+                    if ($this->checkExistByDateTitleCity($startDate, $title, $this->parseConfig['city'])) {
+                        $eventsRuId = EventRu::where('title_de', $title)->value('id');
+                        if ($eventsRuId) {
+                            $count = Event::where(['start_date' => $startDate, 'events_ru_id' => $eventsRuId, 'city' => $this->parseConfig['city']])->delete();
+                            $this->duplicateCount += $count;
+                        }
+                    }
+
+                    $events_ru_id = $this->getEventRuIdByTitle($title);
+                    $artist = $this->cleanText($event->attr($sourceParse['artist_selector']));
+                    $category = $this->cleanText($event->attr($sourceParse['category_selector']));
+                    $location = $this->cleanText($customData->eq(2)->text());
                     $img = $event->filter('img')->first();
                     $imgSrc = $this->cleanText($img->attr('src'));
-
                     $currentDate = date('Y-m-d H:i:s');
 
                     $eventRec = [
@@ -64,12 +77,12 @@ class ParseK1Controller extends BaseParserController
                         'category' => $category,
                         'artist' => $artist,
                         'img' => $imgSrc,
-                        'start_date' => $dt ? $dt->format('Y-m-d H:i:s') : NULL,
+                        'start_date' => $startDate,
                         'end_date' => null,
                         'location' => $location,
                         'link' => $link,
                         'region' => $this->parseConfig['region'],
-                        'city' =>$this->parseConfig['city'],
+                        'city' => $this->parseConfig['city'],
                         'event_types' => json_encode($this->parseConfig['event_types'], JSON_UNESCAPED_UNICODE),
                         'source' => $this->parseConfig['url'],
                         'description' => null,

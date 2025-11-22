@@ -3,19 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-use App\Models\EventRu;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\BrowserKit\HttpBrowser;
-use Symfony\Component\HttpClient\HttpClient;
 use Throwable;
 
-class TraunreutController extends BaseParserController
+class TraunsteinController extends BaseParserController
 {
-    private string $baseUrl = 'https://veranstaltungen.traunreut.de';
+    private string $baseUrl = 'https://irs18whl.infomax.online';
     private string $source = 'traunreut.de';
-    private string $region = 'Bayern';
 
-    protected string $configPath = 'parse.traunreut';
+    protected string $token = '';
+
+
+    protected string $configPath = 'parse.traunstein';
 
     public function run()
     {
@@ -27,34 +27,10 @@ class TraunreutController extends BaseParserController
                 $this->getProcessedHashEvents();
             }
 
-            $this->region = $this->parseConfig['region'];
-            // Query to main site to get token and event_ids :START
-            $crawler = $this->client->request('GET', $this->parseConfig['url']);
-            // $response = $this->client->getResponse();
-            // file_put_contents('start.html', $response->getContent());
-
-            $scriptText = $crawler->filter('script')->eq(2)->text();
-            // token: 'fFSSsbkAaQ4.'
-            $checkToken = preg_match('#token: \'(.+?)\'#', $scriptText, $matches);
-            if ($checkToken) {
-                $token = $matches[1];
-            } else {
-                throw new \Exception('Can\'t find token');
-            }
-
-            $eventIdsContainer = $crawler->filter('#-IMXEVENT-results');
-            $eventsListContainer = $eventIdsContainer->filter('div.-IMXEVNT-h-grid.-IMXEVNT-h-grid--fixed.-IMXEVNT-h-grid--margins');
+            $eventsListContainer = $this->parseMainForm();
 
             $linksAr = [];
-            /*$eventsListContainer->each(function (Crawler $eventContainer) use (&$linksAr, $token, &$eventCount) {
-                $eventAttr = $eventContainer->attr('data-idents');
-                $eventIdsAr = explode(',', $eventAttr);
-                $eventIdsAr = array_values(array_unique(array_filter($eventIdsAr)));
-                $eventStr = '&object%5B%5D=' . implode('&object%5B%5D=', $eventIdsAr);
-                $linksAr[] = 'https://veranstaltungen.traunreut.de/traunreut/de/action/items?widgetToken=' . $token . '&outputType=itemsPage' . $eventStr . '&layout=listitem&showDate=1';
-                $this->eventCount += count($eventIdsAr);
-            });*/
-            $eventsListContainer->each(function (Crawler $eventContainer) use (&$linksAr, $token, &$eventCount) {
+            $eventsListContainer->each(function (Crawler $eventContainer) use (&$linksAr, &$eventCount) {
                 $eventAttr = $eventContainer->attr('data-idents');
                 $eventIdsAr = explode(',', $eventAttr);
                 $eventIdsAr = array_values(array_unique(array_filter($eventIdsAr)));
@@ -70,25 +46,28 @@ class TraunreutController extends BaseParserController
                 }
                 $this->duplicateCount += $countCurIds - count($eventIdsAr);
 
+                // // https://irs18whl.infomax.online/traunstein/de/action/items?widgetToken=VV5JP7zDQHk.&outputType=itemsPage&object%5B%5D=eventdate_1952576&object%5B%5D=eventdate_1950954&object%5B%5D=eventdate_1952498&object%5B%5D=eventdate_1938968&object%5B%5D=eventdate_1981487&object%5B%5D=eventdate_1948826&object%5B%5D=eventdate_1849547&object%5B%5D=eventdate_1952949&object%5B%5D=eventdate_1826219&object%5B%5D=eventdate_1950887&layout=listitem&showDate=1
                 if (!empty($eventIdsAr)) {
+                    // layout=teasergroup
+                    // widgetToken=VV5JP7zDQHk.
                     $eventStr = '&object%5B%5D=' . implode('&object%5B%5D=', $eventIdsAr);
-                    $linksAr[] = $this->baseUrl . '/traunreut/de/action/items?widgetToken=' . $token . '&outputType=itemsPage' . $eventStr . '&layout=listitem&showDate=1';
+                    $linksAr[] = $this->baseUrl . '/traunstein/de/action/items?widgetToken=' . $this->token . '&outputType=itemsPage' . $eventStr . '&layout=listitem&showDate=1';
                 }
             });
-
-
             $this->log('Общее количество событий для обработки: ' . $this->eventCount);
-            // Query to main site to get token and event_ids :END
 
-
-            // https://veranstaltungen.traunreut.de/traunreut/?widgetToken=fFSSsbkAaQ4.&
-            $client = new HttpBrowser(HttpClient::create());
             // Установить Referer
-            $client->setServerParameter('HTTP_REFERER', $this->baseUrl . '/traunreut/?widgetToken=' . $token . '&');
+            $this->client->setServerParameter('HTTP_REFERER', $this->parseConfig['url']); // $this->baseUrl . '/traunreut/?widgetToken=' . $this->token . '&'
             $events = [];
-            foreach ($linksAr as $link) {
-                $itemCrawler = $client->request('GET', $link);
-                $events = array_merge($events, $this->parseEvents($itemCrawler));
+            foreach ($linksAr as $keyLink => $link) {
+                $itemCrawler = $this->client->request('GET', $link);
+                if (!$this->isLocalMode()) {
+                    $events = array_merge($events, $this->parseEvents($itemCrawler));
+                } else {
+                    $response = $this->client->getResponse();
+                    Storage::disk('public')->put('traunstein/' . 'link_' . str_pad(($keyLink + 1), 2, '0', STR_PAD_LEFT) . '.html', $response->getContent());
+                    throw new \Exception('DONE');
+                }
             }
             if (!empty($events)) {
                 Event::insert($events);
@@ -102,22 +81,35 @@ class TraunreutController extends BaseParserController
             ', дубликатов ' . $this->duplicateCount . ', ошибок ' . $this->errorCount);
     }
 
-    /**
-     * Парсинг HTML и получение массива событий
-     */
-    public function parseEvents(Crawler $crawler): array
-    {
-        $events = $crawler
-            ->filter($this->parseConfig['parse']['event_list_selector'])
-            ->each(fn(Crawler $node) => $this->parseEventNode($node));
+    // Query to main site to get token and event_ids
+    // https://irs18whl.infomax.online/traunstein/?form=search&widgetToken=VV5JP7zDQHk.&searchType=search&dateFrom=2025-11-18&dateTo=2025-12-18&timeFrom=0&latitude=47.8857&longitude=12.6389&location=Traunstein&distance=50#-IMXEVENT-results
+    protected function parseMainForm() {
+        // Query to main site to get token and event_ids :START
+        $crawler = $this->client->request('GET', $this->parseConfig['url']);
+        if ($this->isLocalMode()) {
+            $response = $this->client->getResponse();
+            Storage::disk('public')->put('traunstein/traunstein.html', $response->getContent());
+        }
 
-        return array_values(array_filter($events, fn(?array $event): bool => $event !== null));
+        $scriptText = $crawler->filter('script')->eq(2)->text();
+        // token: 'fFSSsbkAaQ4.'
+        $checkToken = preg_match('#token: \'(.+?)\'#', $scriptText, $matches);
+        if ($checkToken) {
+            $this->token = $matches[1];
+        } else {
+            throw new \Exception('Can\'t find token');
+        }
+
+        $eventIdsContainer = $crawler->filter('#-IMXEVENT-results');
+        $eventsListContainer = $eventIdsContainer->filter('div.-IMXEVNT-h-grid.-IMXEVNT-h-grid--fixed.-IMXEVNT-h-grid--margins');
+
+        return $eventsListContainer;
     }
 
     /**
      * Парсинг отдельного узла с событием
      */
-    private function parseEventNode(Crawler $node): ?array
+    protected function parseEventNode(Crawler $node): ?array
     {
         try {
             $eventId = $this->extractEventId($node);
@@ -133,24 +125,17 @@ class TraunreutController extends BaseParserController
                 ++$this->errorCount;
                 return null;
             }
+            $events_ru_id = $this->getEventRuIdByTitle($title);
+
+            $category = $this->filterNodeText($node, $sourceParse['category_selector']);
             $infoText = $this->filterNodeText($node, $sourceParse['info_selector']);
+            $description = $this->filterNodeText($node, $sourceParse['description_selector']);
             $dates = $this->parseDateTime($infoText);
 
             $location = $this->parseLocation($infoText);
             // Removing city from location
             $city = $this->parseCity($location);
 
-            if ($this->checkExistByDateTitleCity($dates['start'], $title, $city)) {
-                $eventsRuId = EventRu::where('title_de', $title)->value('id');
-                if ($eventsRuId) {
-                    $count = Event::where(['start_date' => $dates['start'], 'events_ru_id' => $eventsRuId, 'city' => $city])->delete();
-                    $this->duplicateCount += $count;
-                }
-            }
-
-            $events_ru_id = $this->getEventRuIdByTitle($title);
-            $category = $this->filterNodeText($node, $sourceParse['category_selector']);
-            $description = $this->filterNodeText($node, $sourceParse['description_selector']);
             $eventTypes = $this->determineEventTypes($category, $title, $description);
             $currentDate = date('Y-m-d H:i:s');
 
@@ -165,7 +150,7 @@ class TraunreutController extends BaseParserController
                 'end_date' => $dates['end'],
                 'location' => $location,
                 'link' => $this->extractLink($node),
-                'region' => $this->region,
+                'region' => $this->parseConfig['region'],
                 'city' => $city,
                 'event_types' => $eventTypes ? json_encode($eventTypes, JSON_UNESCAPED_UNICODE) : null,
                 'source' => $this->source,
@@ -182,6 +167,9 @@ class TraunreutController extends BaseParserController
         } catch (Throwable $e) {
             ++$this->errorCount;
             $this->log('Ошибка парсинга события: ' . $e->getMessage(), 'ERROR');
+            // $this->log($node->html());
+            // $this->log($e->getTraceAsString());
+
             return null;
         }
     }
@@ -208,6 +196,8 @@ class TraunreutController extends BaseParserController
             ->first()
             ->attr('href') ?: null;
     }
+
+
 
     /**
      * Извлечение локации из строки информации

@@ -22,7 +22,8 @@ abstract class BaseParserController extends Controller
     ];
 
     protected HttpBrowser $client;
-    protected array $processedEvents = [];
+    protected array $processedIdEvents = [];
+    protected array $processedHashEvents = [];
 
     protected int $duplicateCount = 0;
     protected int $errorCount = 0;
@@ -31,6 +32,10 @@ abstract class BaseParserController extends Controller
 
     protected string $configPath = '';
     protected array $parseConfig = [];
+
+    protected bool $debugMode = false;
+
+    protected bool $localMode = false;
 
     public function __construct()
     {
@@ -46,12 +51,6 @@ abstract class BaseParserController extends Controller
             exit();
         }
 
-        if (!empty($this->parseConfig['site'])) {
-            $this->processedEvents = Event::where('site', $this->parseConfig['site'])
-                ->pluck('event_id')
-                ->toArray();
-        }
-
         $this->client = new HttpBrowser(HttpClient::create([
             'timeout' => 30,
             'headers' => [
@@ -64,6 +63,22 @@ abstract class BaseParserController extends Controller
         $this->log("=== Парсер событий запущен: " . now()->toDateTimeString() . " ===");
     }
 
+    protected function getProcessedIdEvents() : void {
+        if (!empty($this->parseConfig['site'])) {
+            $this->processedIdEvents = Event::where('site', $this->parseConfig['site'])
+                ->pluck('event_id')
+                ->toArray();
+        }
+    }
+
+    protected function getProcessedHashEvents() : void {
+        $this->processedHashEvents = Event::join('events_ru', 'events.events_ru_id', '=', 'events_ru.id')
+            ->select(['events.start_date', 'events_ru.title_de', 'events.city'])
+            ->get()
+            ->map(fn($item) => ($item->start_date ?? '') . '_' . $item->title_de . '_' . $item->city)
+            ->toArray();
+    }
+
     protected function log(string $message, string $level = 'info'): void
     {
         Log::{$level}($message);
@@ -71,6 +86,38 @@ abstract class BaseParserController extends Controller
         if (app()->runningInConsole()) {
             echo '['.now()->toDateTimeString().'] ['.strtoupper($level).'] '.$message.PHP_EOL;
         }
+    }
+
+    public function isDebugMode(): bool
+    {
+        return $this->debugMode;
+    }
+
+    public function setDebugMode(bool $debugMode): void
+    {
+        $this->debugMode = $debugMode;
+    }
+
+    public function isLocalMode(): bool
+    {
+        return $this->localMode;
+    }
+
+    public function setLocalMode(bool $localMode): void
+    {
+        $this->localMode = $localMode;
+    }
+
+    /**
+     * Парсинг HTML и получение массива событий
+     */
+    public function parseEvents(Crawler $crawler): array
+    {
+        $events = $crawler
+            ->filter($this->parseConfig['parse']['event_list_selector'])
+            ->each(fn(Crawler $node) => static::parseEventNode($node));
+
+        return array_values(array_filter($events, fn(?array $event): bool => $event !== null));
     }
 
     protected function normalizeUrl(?string $url, string $baseUrl): ?string
@@ -108,34 +155,32 @@ abstract class BaseParserController extends Controller
         return $text !== '' ? $text : null;
     }
 
-    protected function checkExistEvent(int $eventId): bool
+    protected function checkExistEventById(int $eventId): bool
     {
-        if (in_array($eventId, $this->processedEvents)) {
+        if (in_array($eventId, $this->processedIdEvents)) {
             return true;
         }
-        $this->processedEvents[] = $eventId;
+        $this->processedIdEvents[] = $eventId;
         return false;
     }
 
-    protected function isEventDuplicate(array $event): bool
+    protected function checkExistByDateTitleCity(?string $startDate, string $title, string $city): bool
     {
-        $hash = $event['site'] . '_' . $event['event_id'];
+        $hash = ($startDate ?? '') . '_' . $title . '_' . $city;
 
-        if (in_array($hash, $this->processedEvents)) {
+        if (in_array($hash, $this->processedHashEvents)) {
             return true;
         }
 
-        $this->processedEvents[] = $hash;
-        return Event::where('site', $event['site'])
-            ->where('event_id', $event['event_id'])
-            ->exists();
+        $this->processedHashEvents[] = $hash;
+        return false;
     }
 
     protected function isEventDuplicateOld(array $event): bool
     {
         $hash = md5(strtolower($event['title'] . $event['start_date'] . $event['location']));
 
-        if (in_array($hash, $this->processedEvents, true)) {
+        if (in_array($hash, $this->processedIdEvents, true)) {
             return true;
         }
 
@@ -158,7 +203,7 @@ abstract class BaseParserController extends Controller
             }
         }
 
-        $this->processedEvents[] = $hash;
+        $this->processedIdEvents[] = $hash;
         return false;
     }
 
@@ -179,5 +224,106 @@ abstract class BaseParserController extends Controller
             $events_ru_id = $eventsRu->id;
         }
         return $events_ru_id;
+    }
+
+    /**
+     * Парсинг даты и времени из строки информации
+     * Возвращает массив с start_date и end_date
+     */
+    protected function parseDateTime(string $infoText): array
+    {
+        $result = [
+            'start' => null,
+            'end' => null
+        ];
+
+        // Паттерн для диапазона времени: DD.MM.YYYY / HH:MM - HH:MM
+        if (preg_match('/(\d{2})\.(\d{2})\.(\d{4})\s*\/\s*(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/', $infoText, $matches)) {
+            $date = "{$matches[3]}-{$matches[2]}-{$matches[1]}";
+            $result['start'] = "{$date} {$matches[4]}:{$matches[5]}:00";
+            $result['end'] = "{$date} {$matches[6]}:{$matches[7]}:00";
+            return $result;
+        }
+
+        // Паттерн для одного времени: DD.MM.YYYY / HH:MM
+        if (preg_match('/(\d{2})\.(\d{2})\.(\d{4})\s*\/\s*(\d{2}):(\d{2})/', $infoText, $matches)) {
+            $result['start'] = "{$matches[3]}-{$matches[2]}-{$matches[1]} {$matches[4]}:{$matches[5]}:00";
+            // Если есть только время начала, делаем end_date +1 час от start_date
+            // $startTime = new DateTime($result['start']);
+            // $startTime->modify('+1 hour');
+            // $result['end'] = $startTime->format('Y-m-d H:i:s');
+            return $result;
+        }
+
+        // Паттерн для даты без времени: DD.MM.YYYY
+        if (preg_match('/(\d{2})\.(\d{2})\.(\d{4})/', $infoText, $matches)) {
+            $result['start'] = "{$matches[3]}-{$matches[2]}-{$matches[1]} 00:00:00";
+            // $result['end'] = "{$matches[3]}-{$matches[2]}-{$matches[1]} 23:59:59";
+            return $result;
+        }
+
+        // Если не удалось распарсить, возвращаем null
+        return $result;
+    }
+
+    /**
+     * Определение типов событий на основе категории и содержимого
+     */
+    protected function determineEventTypes(string $category, string $title, string $description): ?array
+    {
+        $content = mb_strtolower($category . ' ' . $title . ' ' . $description);
+
+        $typeMatchers = [
+            'Sport' => ['sport', 'yoga', 'fitness', 'radtour', 'segway', 'biathlon', 'bogenschiessen', 'nordic-walking', 'workout', 'pilates', 'turnier'],
+            'Kultur' => ['ausstellung', 'museen', 'kunstausstellung', 'museum'],
+            'Familie' => ['kinder', 'familien', 'pony', 'bilderbuch', 'märchen'],
+            'Gastronomie' => ['kulinarisches', 'brauerei', 'schnitzel', 'fondue', 'brauereiführung'],
+            'Wellness' => ['gesundheit', 'meditation', 'massage', 'feldenkrais', 'entspann'],
+            'Workshop' => ['workshop', 'kurs', 'schmuckdesign', 'malkurs'],
+            'Natur' => ['naturerlebnisse', 'wanderherbst', 'wanderung', 'naturführung'],
+            'Literatur' => ['lesung', 'literatur', 'autoren']
+        ];
+
+        $types = [];
+        foreach ($typeMatchers as $type => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (str_contains($content, $keyword)) {
+                    $types[] = $type;
+                    break;
+                }
+            }
+        }
+
+        if (empty($types) && !empty($category)) {
+            // Извлекаем первую категорию из списка через &
+            $firstCategory = explode('&', $category)[0];
+            return [trim($firstCategory)] ?: null;
+        }
+
+        // return !empty($types) ? implode(', ', array_unique($types)) : null;
+        return array_values(array_unique(array_filter($types)));
+    }
+
+    /**
+     * Извлечение городов из локации
+     */
+    protected function parseCity(?string &$location = null): ?string
+    {
+        if (empty($location)) {
+            return null;
+        }
+
+        $parts = array_map('trim', explode(',', $location));
+        $city = array_pop($parts);
+        $location = implode(', ', $parts);
+
+        // Проверяем точное совпадение
+        foreach (self::KNOWN_CITIES as $knownCity) {
+            if (stripos($city, $knownCity) !== false) {
+                return $knownCity;
+            }
+        }
+
+        return $city ?: null;
     }
 }
