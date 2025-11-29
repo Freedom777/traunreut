@@ -90,7 +90,8 @@ abstract class BaseParserController extends Controller
 
     protected function getProcessedIdEvents() : void {
         if (!empty($this->parseConfig['site'])) {
-            $this->processedIdEvents = Event::where('site', $this->parseConfig['site'])
+            $this->processedIdEvents = Event::withTrashed()
+                ->where('site', $this->parseConfig['site'])
                 ->pluck('event_id')
                 ->toArray();
         }
@@ -179,7 +180,8 @@ abstract class BaseParserController extends Controller
                 // Get the inserted events by their event_id
                 foreach ($events as $index => $eventData) {
                     if (isset($eventTypesMap[$index]) && !empty($eventTypesMap[$index])) {
-                        $event = Event::where('event_id', $eventData['event_id'])
+                        $event = Event::withTrashed()
+                            ->where('event_id', $eventData['event_id'])
                             ->where('site', $eventData['site'])
                             ->first();
                         if ($event) {
