@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->unsignedBigInteger('events_ru_id')->nullable()->default(null)->after('id');
+        Schema::create('states', function (Blueprint $table) {
+            $table->collation = 'utf8mb4_0900_as_cs';
+            $table->string('code', 2)->primary();
+            $table->string('name')->unique();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->removeColumn('events_ru_id');
-        });
+        Schema::dropIfExists('states');
     }
 };

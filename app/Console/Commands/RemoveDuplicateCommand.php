@@ -30,14 +30,14 @@ class RemoveDuplicateCommand extends Command
         $duplicatesToDelete = Event::query()
             ->select('events.*')
             ->join(DB::raw('(
-        SELECT start_date, events_ru_id, city, MAX(id) as keep_id
+        SELECT start_date, event_title_id, city_id, MAX(id) as keep_id
         FROM events
-        GROUP BY start_date, events_ru_id, city
+        GROUP BY start_date, event_title_id, city_id
         HAVING COUNT(*) > 1
     ) as keeper'), function ($join) {
                 $join->on('events.start_date', '=', 'keeper.start_date')
-                    ->on('events.events_ru_id', '=', 'keeper.events_ru_id')
-                    ->on('events.city', '=', 'keeper.city');
+                    ->on('events.event_title_id', '=', 'keeper.event_title_id')
+                    ->on('events.city_id', '=', 'keeper.city_id');
             })
             ->whereColumn('events.id', '!=', 'keeper.keep_id')
             ->get();

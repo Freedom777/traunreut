@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventRu;
+use App\Models\City;
+use App\Models\EventTitle;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\BrowserKit\HttpBrowser;
@@ -12,14 +14,37 @@ use Symfony\Component\HttpClient\HttpClient;
 
 abstract class BaseParserController extends Controller
 {
-    const KNOWN_CITIES = [
-        'Bergen', 'Chieming', 'Eisenärzt', 'Fridolfing', 'Grabenstätt', 'Grassau', 'Herreninsel', 'Inzell', 'Kirchanschöring',
-        'Marquartstein', 'Nußdorf', 'Oberwössen', 'Obing', 'Otting', 'Petting', 'Pittenhart', 'Reit im Winkl', 'Rottau',
-        'Ruhpolding', 'Schleching', 'Seebruck', 'Seeon', 'Siegsdorf', 'Sondermoning', 'St. Leonhard', 'St. Leonhard am Wonneberg',
-        'Staudach-Egerndach', 'Stein a.d. Traun', 'Taching', 'Taching am See', 'Tengling', 'Tettenhausen', 'Tirol', 'Tittmoning',
-        'Traunreut', 'Traunstein', 'Trostberg', 'Truchtlaching', 'Übersee', 'Unterwössen', 'Waging', 'Waging am See', 'Weibhausen',
-        'Wonneberg'
-    ];
+    protected const TITLE_SIMILARITY_THRESHOLD = 90;
+
+    abstract protected function fetchEvents(): array;
+
+    public function run()
+    {
+        $this->log('Начинаем парсинг: ' . $this->parseConfig['url']);
+
+        try {
+            if (!$this->isLocalMode()) {
+                $this->getProcessedIdEvents();
+                $this->getProcessedHashEvents();
+            }
+
+            $events = $this->fetchEvents();
+
+            $this->log('Общее количество событий для обработки: ' . $this->eventCount);
+
+            $this->saveEvents($events);
+
+        } catch (\Exception $e) {
+            $this->log('Критическая ошибка при парсинге ' . $this->parseConfig['url'] . ': ' . $e->getMessage(), 'ERROR');
+        }
+
+        $this->log('Завершен парсинг ' . $this->parseConfig['url'] . ': найдено ' . $this->eventCount . ', добавлено ' . $this->successCount .
+            ', дубликатов ' . $this->duplicateCount . ', ошибок ' . $this->errorCount);
+    }
+
+    abstract protected function parseEventNode(Crawler $node): ?array;
+
+
 
     protected HttpBrowser $client;
     protected array $processedIdEvents = [];
@@ -72,10 +97,17 @@ abstract class BaseParserController extends Controller
     }
 
     protected function getProcessedHashEvents() : void {
-        $this->processedHashEvents = Event::join('events_ru', 'events.events_ru_id', '=', 'events_ru.id')
-            ->select(['events.start_date', 'events_ru.title_de', 'events.city'])
+        $this->processedHashEvents = Event::join('event_titles', 'events.event_title_id', '=', 'event_titles.id')
+            ->select(['events.start_date', 'event_titles.title_de', 'events.city_id'])
+            ->where('events.site', $this->parseConfig['site'])
             ->get()
-            ->map(fn($item) => ($item->start_date ?? '') . '_' . $item->title_de . '_' . $item->city)
+            ->map(function ($event) {
+                return [
+                    'start_date' => $event->start_date ?? '',
+                    'title' => $event->title_de,
+                    'city_id' => $event->city_id
+                ];
+            })
             ->toArray();
     }
 
@@ -115,9 +147,53 @@ abstract class BaseParserController extends Controller
     {
         $events = $crawler
             ->filter($this->parseConfig['parse']['event_list_selector'])
-            ->each(fn(Crawler $node) => static::parseEventNode($node));
+            ->each(fn(Crawler $node) => $this->parseEventNode($node));
 
         return array_values(array_filter($events, fn(?array $event): bool => $event !== null));
+    }
+
+    /**
+     * Массовое сохранение событий
+     */
+    protected function saveEvents(array $events): void
+    {
+        if (empty($events)) {
+            return;
+        }
+
+        try {
+            // Extract event_type_ids before inserting
+            $eventTypesMap = [];
+            foreach ($events as $index => $event) {
+                if (isset($event['event_type_ids'])) {
+                    $eventTypesMap[$index] = $event['event_type_ids'];
+                    unset($events[$index]['event_type_ids']);
+                }
+            }
+
+            // Insert events
+            Event::insert($events);
+            
+            // Attach event types via many-to-many relationship
+            if (!empty($eventTypesMap)) {
+                // Get the inserted events by their event_id
+                foreach ($events as $index => $eventData) {
+                    if (isset($eventTypesMap[$index]) && !empty($eventTypesMap[$index])) {
+                        $event = Event::where('event_id', $eventData['event_id'])
+                            ->where('site', $eventData['site'])
+                            ->first();
+                        if ($event) {
+                            $event->eventTypes()->sync($eventTypesMap[$index]);
+                        }
+                    }
+                }
+            }
+
+            $this->log('Сохранено ' . count($events) . ' событий.');
+        } catch (\Exception $e) {
+            $this->log('Ошибка при сохранении событий: ' . $e->getMessage(), 'ERROR');
+            $this->errorCount += count($events);
+        }
     }
 
     protected function normalizeUrl(?string $url, string $baseUrl): ?string
@@ -164,15 +240,33 @@ abstract class BaseParserController extends Controller
         return false;
     }
 
-    protected function checkExistByDateTitleCity(?string $startDate, string $title, string $city): bool
+    protected function checkExistByDateTitleCity(?string $startDate, string $title, int $cityId): bool
     {
-        $hash = ($startDate ?? '') . '_' . $title . '_' . $city;
-
-        if (in_array($hash, $this->processedHashEvents)) {
-            return true;
+        // Check for similar events with exact date/city match and fuzzy title match
+        foreach ($this->processedHashEvents as $processedEvent) {
+            // Exact match for date and city
+            if ($processedEvent['start_date'] === ($startDate ?? '') && $processedEvent['city_id'] === $cityId) {
+                // Fuzzy match for title
+                $similarity = 0;
+                similar_text(
+                    mb_strtolower($processedEvent['title']),
+                    mb_strtolower($title),
+                    $similarity
+                );
+                
+                if ($similarity >= self::TITLE_SIMILARITY_THRESHOLD) {
+                    return true;
+                }
+            }
         }
 
-        $this->processedHashEvents[] = $hash;
+        // Add to processed events
+        $this->processedHashEvents[] = [
+            'start_date' => $startDate ?? '',
+            'title' => $title,
+            'city_id' => $cityId
+        ];
+        
         return false;
     }
 
@@ -214,16 +308,19 @@ abstract class BaseParserController extends Controller
             ->text(default: '');
     }
 
-    protected function getEventRuIdByTitle(string $title): int
+    /**
+     * Получение ID заголовка события по названию (или создание нового)
+     */
+    protected function getEventTitleId(string $title): int
     {
-        $events_ru_id = EventRu::where('title_de', $title)->value('id');
-        if (!$events_ru_id) {
-            $eventsRu = new EventRu();
-            $eventsRu->title_de = $title;
-            $eventsRu->save();
-            $events_ru_id = $eventsRu->id;
+        $eventTitleId = EventTitle::where('title_de', $title)->value('id');
+        if (!$eventTitleId) {
+            $eventTitle = new EventTitle();
+            $eventTitle->title_de = $title;
+            $eventTitle->save();
+            $eventTitleId = $eventTitle->id;
         }
-        return $events_ru_id;
+        return $eventTitleId;
     }
 
     /**
@@ -268,62 +365,122 @@ abstract class BaseParserController extends Controller
 
     /**
      * Определение типов событий на основе категории и содержимого
+     * @return array Array of EventType IDs
      */
-    protected function determineEventTypes(string $category, string $title, string $description): ?array
+    protected function determineEventTypes(string $category, string $title, string $description): array
     {
         $content = mb_strtolower($category . ' ' . $title . ' ' . $description);
+        
+        // Получаем ключевые слова из БД с типами событий
+        static $keywords = null;
+        if ($keywords === null) {
+            $keywords = $this->getEventKeywords();
+        }
 
-        $typeMatchers = [
-            'Sport' => ['sport', 'yoga', 'fitness', 'radtour', 'segway', 'biathlon', 'bogenschiessen', 'nordic-walking', 'workout', 'pilates', 'turnier'],
-            'Kultur' => ['ausstellung', 'museen', 'kunstausstellung', 'museum'],
-            'Familie' => ['kinder', 'familien', 'pony', 'bilderbuch', 'märchen'],
-            'Gastronomie' => ['kulinarisches', 'brauerei', 'schnitzel', 'fondue', 'brauereiführung'],
-            'Wellness' => ['gesundheit', 'meditation', 'massage', 'feldenkrais', 'entspann'],
-            'Workshop' => ['workshop', 'kurs', 'schmuckdesign', 'malkurs'],
-            'Natur' => ['naturerlebnisse', 'wanderherbst', 'wanderung', 'naturführung'],
-            'Literatur' => ['lesung', 'literatur', 'autoren']
-        ];
+        $typeIds = [];
 
-        $types = [];
-        foreach ($typeMatchers as $type => $keywords) {
-            foreach ($keywords as $keyword) {
-                if (str_contains($content, $keyword)) {
-                    $types[] = $type;
-                    break;
-                }
+        foreach ($keywords as $keywordModel) {
+            if (str_contains($content, mb_strtolower($keywordModel->keyword))) {
+                $typeIds[] = $keywordModel->event_type_id;
             }
         }
 
-        if (empty($types) && !empty($category)) {
+        if (empty($typeIds) && !empty($category)) {
             // Извлекаем первую категорию из списка через &
-            $firstCategory = explode('&', $category)[0];
-            return [trim($firstCategory)] ?: null;
+            $firstCategory = trim(explode('&', $category)[0]);
+            // Пытаемся найти или создать тип события по имени категории
+            if ($firstCategory) {
+                $eventType = \App\Models\EventType::firstOrCreate(['name' => $firstCategory]);
+                $typeIds[] = $eventType->id;
+            }
         }
 
-        // return !empty($types) ? implode(', ', array_unique($types)) : null;
-        return array_values(array_unique(array_filter($types)));
+        return array_values(array_unique(array_filter($typeIds)));
     }
 
     /**
      * Извлечение городов из локации
      */
-    protected function parseCity(?string &$location = null): ?string
+    protected function parseCity(?string &$location = null, ?string &$zip = null): ?string
     {
         if (empty($location)) {
             return null;
         }
 
-        $parts = array_map('trim', explode(',', $location));
-        $city = array_pop($parts);
-        $location = implode(', ', $parts);
+        // Пытаемся найти ZIP код и город: 5 цифр, пробел, название города
+        // Пример: "83301 Traunreut"
+        if (preg_match('/(\d{5})\s+([^,]+)/', $location, $matches)) {
+            $zip = $matches[1];
+            $cityName = trim($matches[2]);
+            
+            // Удаляем ZIP и город из локации, оставляя только улицу/место
+            $location = trim(str_replace($matches[0], '', $location));
+            $location = trim($location, ', ');
 
-        // Проверяем точное совпадение
-        foreach (self::KNOWN_CITIES as $knownCity) {
-            if (stripos($city, $knownCity) !== false) {
-                return $knownCity;
-            }
+            return $cityName;
         }
 
-        return $city ?: null;
+        // Если ZIP не найден, пробуем найти город в конце строки, сверяясь с БД
+        $parts = array_map('trim', explode(',', $location));
+        $possibleCity = end($parts);
+        
+        // Проверяем точное совпадение с городами в БД
+        $cityExists = \App\Models\City::where('name', $possibleCity)->exists();
+
+        if ($cityExists) {
+            // Удаляем последнюю часть из локации
+            array_pop($parts);
+            $location = implode(', ', $parts);
+            return $possibleCity;
+        }
+
+        // Если не нашли известный город и нет ZIP, считаем последнюю часть городом
+        return $possibleCity ?: null;
+    }
+
+    /**
+     * Получение ID города по названию и ZIP коду
+     */
+    protected function getCityId(?string $cityName, ?string $zip = null): ?int
+    {
+        if (empty($cityName)) {
+            return null;
+        }
+        
+        // Try to find by ZIP first (most accurate)
+        if ($zip) {
+            $city = City::where('zip_code', $zip)->first();
+            if ($city) {
+                return $city->id;
+            }
+        }
+        
+        // Try to find by name
+        $city = City::where('name', $cityName)->first();
+        if ($city) {
+            return $city->id;
+        }
+        
+        // Create new city (without state if not found)
+        $city = City::create([
+            'name' => $cityName,
+            'zip_code' => $zip,
+            'state_code' => null // Will be updated later via data migration
+        ]);
+        
+        return $city->id;
+    }
+
+    protected function findOrCreateCity(string $zip, string $name): \App\Models\City
+    {
+        return \App\Models\City::firstOrCreate(
+            ['zip_code' => $zip],
+            ['name' => $name]
+        );
+    }
+
+    protected function getEventKeywords()
+    {
+        return \App\Models\EventTypeKeyword::all();
     }
 }

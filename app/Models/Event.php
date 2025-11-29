@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Event extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
-        'events_ru_id',
+        'event_title_id',
         'site',
         'event_id',
         'category',
@@ -19,9 +22,7 @@ class Event extends Model
         'end_date',
         'location',
         'link',
-        'region',
-        'cities',
-        'event_types',
+        'city_id',
         'source',
         'description',
         'price',
@@ -35,10 +36,23 @@ class Event extends Model
     ];
 
     /**
-     * Получить заголовки
+     * Получить заголовок события
      */
-    public function titles(): BelongsTo
+    public function eventTitle()
     {
-        return $this->belongsTo(EventRu::class, 'events_ru_id');
+        return $this->belongsTo(EventTitle::class, 'event_title_id');
+    }
+
+    /**
+     * Получить город события
+     */
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
+    public function eventTypes()
+    {
+        return $this->belongsToMany(EventType::class, 'event_event_type');
     }
 }

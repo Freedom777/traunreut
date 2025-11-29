@@ -125,7 +125,7 @@ class TraunsteinController extends BaseParserController
                 ++$this->errorCount;
                 return null;
             }
-            $events_ru_id = $this->getEventRuIdByTitle($title);
+            $eventTitleId = $this->getEventTitleId($title);
 
             $category = $this->filterNodeText($node, $sourceParse['category_selector']);
             $infoText = $this->filterNodeText($node, $sourceParse['info_selector']);
@@ -140,7 +140,8 @@ class TraunsteinController extends BaseParserController
             $currentDate = date('Y-m-d H:i:s');
 
             $eventRec = [
-                'events_ru_id' => $events_ru_id,
+                // 'title' => $title,
+                'event_title_id' => $eventTitleId,
                 'site' => $this->parseConfig['site'],
                 'event_id' => $eventId,
                 'category' => $category ?: null,
@@ -160,6 +161,7 @@ class TraunsteinController extends BaseParserController
                 'debug_html' => $node->html(),
                 'created_at' => $currentDate,
                 'updated_at' => $currentDate,
+                'deleted_at' => null,
             ];
 
             ++$this->successCount;

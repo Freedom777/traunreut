@@ -170,15 +170,14 @@ class TelegramWebhookHandler extends WebhookHandler
     private function sendCityList(): void
     {
         try {
-            $cities = Event::select('city')
+            $cities = Event::join('cities', 'events.city_id', '=', 'cities.id')
+                ->select('cities.name as city_name', 'cities.id as city_id')
                 ->distinct()
-                ->whereNotNull('city')
-                ->where('city', '!=', '')
-                ->orderBy('city', 'asc')
-                ->pluck('city')
-                ->toArray();
+                ->whereNotNull('events.city_id')
+                ->orderBy('cities.name', 'asc')
+                ->get();
 
-            if (empty($cities)) {
+            if ($cities->isEmpty()) {
                 $this->chat->message('Города не найдены в базе данных.')
                     ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back'))
                     ->send();
@@ -189,10 +188,10 @@ class TelegramWebhookHandler extends WebhookHandler
             $keyboard = Keyboard::make();
             $row = [];
 
-            foreach ($cities as $city) {
-                $row[] = Button::make($city)
+            foreach ($cities as $cityData) {
+                $row[] = Button::make($cityData->city_name)
                     ->action('selectCity')
-                    ->param('city', $city);
+                    ->param('city', $cityData->city_id);
 
                 if (count($row) === 2) {
                     $keyboard->row($row);
@@ -229,27 +228,33 @@ class TelegramWebhookHandler extends WebhookHandler
         $now = Carbon::now();
         $startDate = $now->copy()->startOfDay();
 
-        $query = Event::with('titles')
+        $query = Event::with(['eventTitle', 'city'])
             ->where('start_date', '>=', $startDate)
             ->orderBy('start_date', 'asc');
 
         if ($city !== self::ALL_CITIES) {
-            $query->where('city', $city);
+            $query->where('city_id', $city);
         }
 
         $events = $query->get();
 
         if ($events->isEmpty()) {
-            $this->chat->message('События в ' . ($city == self::ALL_CITIES ? 'городах' : 'городе ' . '"' . $city . '"') . ' не найдены.')
+            $cityName = $city == self::ALL_CITIES 
+                ? 'городах' 
+                : ('городе ' . ($events->first()->city?->name ?? \App\Models\City::find($city)?->name ?? 'неизвестном'));
+            $this->chat->message('События в ' . $cityName . ' не найдены.')
                 ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back'))
                 ->send();
             return;
         }
 
         // Формируем сообщения с событиями
+        $cityName = $city == self::ALL_CITIES 
+            ? 'городах' 
+            : ('городе ' . ($events->first()->city?->name ?? \App\Models\City::find($city)?->name ?? 'неизвестном'));
         $result = $this->formatEventsMessages(
             $events,
-            'События в ' . ($city == self::ALL_CITIES ? 'городах' : 'городе ' . $city),
+            'События в ' . $cityName,
             $languageCode,
             $page,
             false  // НЕ показываем город в событиях (режим "по городу")
@@ -295,7 +300,7 @@ class TelegramWebhookHandler extends WebhookHandler
             ]
         };
 
-        $events = Event::with('titles')
+        $events = Event::with(['eventTitle', 'city'])
             ->whereBetween('start_date', [$startDate, $endDate])
             ->orderBy('start_date', 'asc')
             ->get();
@@ -307,12 +312,16 @@ class TelegramWebhookHandler extends WebhookHandler
             return;
         }
 
-        // Фильтруем по городу
+        // Filter by city
         if ($city && $city !== self::ALL_CITIES) {
-            $events = $events->where('city', $city);
+            $events = $events->where('city_id', $city);
         }
 
-        $cities = $events->pluck('city')->unique()->sort()->values()->toArray();
+        $cities = $events->map(fn($e) => ['id' => $e->city_id, 'name' => $e->city?->name])
+            ->unique('id')
+            ->sortBy('name')
+            ->values()
+            ->toArray();
 
         // Если несколько городов и не выбрано "показать все"
         if (!$showAll && count($cities) > 1) {
@@ -327,10 +336,10 @@ class TelegramWebhookHandler extends WebhookHandler
             // Кнопки городов
             $row = [];
             foreach ($cities as $c) {
-                $row[] = Button::make($c)
+                $row[] = Button::make($c['name'])
                     ->action('filterPeriod')
                     ->param('period', $period)
-                    ->param('city', $c);
+                    ->param('city', $c['id']);
 
                 if (count($row) === 2) {
                     $keyboard->row($row);
@@ -453,17 +462,18 @@ class TelegramWebhookHandler extends WebhookHandler
                 $timeBlock = '<b>' . $timeStr . '</b>';
 
                 foreach ($timeEvents as $event) {
-                    $titleRu = $event->titles?->title_ru ?? $event->titles?->title_de;
+                    $titleRu = $event->eventTitle?->title_ru ?? $event->eventTitle?->title_de;
 
                     // Формируем локацию с городом
                     if ($showCityInEvents) {
                         // Режим "по дате" - показываем город жирным
+                        $cityName = $event->city?->name ?? '';
                         $location = $event->location
-                            ? $event->location . ', <b>' . $event->city . '</b>'
-                            : '<b>' . $event->city . '</b>';
+                            ? $event->location . ', <b>' . $cityName . '</b>'
+                            : '<b>' . $cityName . '</b>';
                     } else {
                         // Режим "по городу" - город не показываем
-                        $location = $event->location ?: $event->city;
+                        $location = $event->location ?: ($event->city?->name ?? '');
                     }
 
                     $line = $event->link

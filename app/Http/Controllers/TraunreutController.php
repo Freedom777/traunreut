@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventRu;
+use App\Models\EventTitle;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\HttpClient\HttpClient;
@@ -17,107 +18,150 @@ class TraunreutController extends BaseParserController
 
     protected string $configPath = 'parse.traunreut';
 
-    public function run()
+    public function fetchEvents(): array
     {
-        $this->log('Начинаем парсинг: ' . $this->parseConfig['url']);
+        $this->region = $this->parseConfig['region'];
+        
+        $token = $this->fetchToken();
+        $linksAr = $this->fetchEventLinks($token);
 
-        try {
-            if (!$this->isLocalMode()) {
-                $this->getProcessedIdEvents();
-                $this->getProcessedHashEvents();
+        return $this->fetchEventDetails($linksAr, $token);
+    }
+
+    private function fetchToken(): string
+    {
+        $crawler = $this->client->request('GET', $this->parseConfig['url']);
+        
+        // Попытка найти скрипт с токеном более надежным способом
+        $scriptText = '';
+        $crawler->filter('script')->each(function (Crawler $node) use (&$scriptText) {
+            if (str_contains($node->text(), "token: '")) {
+                $scriptText = $node->text();
             }
+        });
 
-            $this->region = $this->parseConfig['region'];
-            // Query to main site to get token and event_ids :START
-            $crawler = $this->client->request('GET', $this->parseConfig['url']);
-            // $response = $this->client->getResponse();
-            // file_put_contents('start.html', $response->getContent());
-
-            $scriptText = $crawler->filter('script')->eq(2)->text();
-            // token: 'fFSSsbkAaQ4.'
-            $checkToken = preg_match('#token: \'(.+?)\'#', $scriptText, $matches);
-            if ($checkToken) {
-                $token = $matches[1];
-            } else {
-                throw new \Exception('Can\'t find token');
-            }
-
-            $eventIdsContainer = $crawler->filter('#-IMXEVENT-results');
-            $eventsListContainer = $eventIdsContainer->filter('div.-IMXEVNT-h-grid.-IMXEVNT-h-grid--fixed.-IMXEVNT-h-grid--margins');
-
-            $linksAr = [];
-            /*$eventsListContainer->each(function (Crawler $eventContainer) use (&$linksAr, $token, &$eventCount) {
-                $eventAttr = $eventContainer->attr('data-idents');
-                $eventIdsAr = explode(',', $eventAttr);
-                $eventIdsAr = array_values(array_unique(array_filter($eventIdsAr)));
-                $eventStr = '&object%5B%5D=' . implode('&object%5B%5D=', $eventIdsAr);
-                $linksAr[] = 'https://veranstaltungen.traunreut.de/traunreut/de/action/items?widgetToken=' . $token . '&outputType=itemsPage' . $eventStr . '&layout=listitem&showDate=1';
-                $this->eventCount += count($eventIdsAr);
-            });*/
-            $eventsListContainer->each(function (Crawler $eventContainer) use (&$linksAr, $token, &$eventCount) {
-                $eventAttr = $eventContainer->attr('data-idents');
-                $eventIdsAr = explode(',', $eventAttr);
-                $eventIdsAr = array_values(array_unique(array_filter($eventIdsAr)));
-                $countCurIds = count($eventIdsAr);
-                $this->eventCount += $countCurIds;
-                if ($countCurIds) {
-                    $prefix = substr($eventIdsAr [0],0, 10);
-                    $eventIdIntAr = array_map(fn($e) => (int)substr($e, 10), $eventIdsAr);
-                    $eventIdIntAr = array_diff($eventIdIntAr, $this->processedIdEvents);
-                    if ($eventIdIntAr) {
-                        $eventIdsAr = array_map(fn($id) => $prefix . $id, $eventIdIntAr);
-                    }
-                }
-                $this->duplicateCount += $countCurIds - count($eventIdsAr);
-
-                if (!empty($eventIdsAr)) {
-                    $eventStr = '&object%5B%5D=' . implode('&object%5B%5D=', $eventIdsAr);
-                    $linksAr[] = $this->baseUrl . '/traunreut/de/action/items?widgetToken=' . $token . '&outputType=itemsPage' . $eventStr . '&layout=listitem&showDate=1';
-                }
-            });
-
-
-            $this->log('Общее количество событий для обработки: ' . $this->eventCount);
-            // Query to main site to get token and event_ids :END
-
-
-            // https://veranstaltungen.traunreut.de/traunreut/?widgetToken=fFSSsbkAaQ4.&
-            $client = new HttpBrowser(HttpClient::create());
-            // Установить Referer
-            $client->setServerParameter('HTTP_REFERER', $this->baseUrl . '/traunreut/?widgetToken=' . $token . '&');
-            $events = [];
-            foreach ($linksAr as $link) {
-                $itemCrawler = $client->request('GET', $link);
-                $events = array_merge($events, $this->parseEvents($itemCrawler));
-            }
-            if (!empty($events)) {
-                Event::insert($events);
-            }
-
-        } catch (\Exception $e) {
-            $this->log('Критическая ошибка при парсинге ' . $this->parseConfig['url'] . ': ' . $e->getMessage(), 'ERROR');
+        if (empty($scriptText)) {
+             // Fallback to previous method if specific search fails, but with check
+             if ($crawler->filter('script')->count() > 2) {
+                 $scriptText = $crawler->filter('script')->eq(2)->text();
+             }
         }
 
-        $this->log('Завершен парсинг ' . $this->parseConfig['url'] . ': найдено ' . $this->eventCount . ', добавлено ' . $this->successCount .
-            ', дубликатов ' . $this->duplicateCount . ', ошибок ' . $this->errorCount);
+        if (preg_match('#token: \'(.+?)\'#', $scriptText, $matches)) {
+            return $matches[1];
+        }
+
+        throw new \Exception('Can\'t find token');
+    }
+
+    private function fetchEventLinks(string $token): array
+    {
+        $crawler = $this->client->getCrawler(); // Используем уже загруженный crawler из fetchToken (если клиент сохраняет состояние)
+        // Но лучше явно передать или запросить снова, если состояние не гарантировано. 
+        // В данном случае, клиент HttpBrowser сохраняет последнее состояние, но fetchToken мог быть вызван отдельно.
+        // Для надежности, так как мы уже на странице, используем текущий crawler клиента.
+        
+        $eventIdsContainer = $crawler->filter('#-IMXEVENT-results');
+        if ($eventIdsContainer->count() === 0) {
+             return [];
+        }
+        
+        $eventsListContainer = $eventIdsContainer->filter('div.-IMXEVNT-h-grid.-IMXEVNT-h-grid--fixed.-IMXEVNT-h-grid--margins');
+        
+        $linksAr = [];
+        $eventsListContainer->each(function (Crawler $eventContainer) use (&$linksAr, $token) {
+            $eventAttr = $eventContainer->attr('data-idents');
+            if (!$eventAttr) return;
+
+            $eventIdsAr = explode(',', $eventAttr);
+            $eventIdsAr = array_values(array_unique(array_filter($eventIdsAr)));
+            $countCurIds = count($eventIdsAr);
+            $this->eventCount += $countCurIds;
+
+            if ($countCurIds) {
+                $prefix = substr($eventIdsAr[0], 0, 10);
+                $eventIdIntAr = array_map(fn($e) => (int)substr($e, 10), $eventIdsAr);
+                $eventIdIntAr = array_diff($eventIdIntAr, $this->processedIdEvents);
+                
+                if ($eventIdIntAr) {
+                    $eventIdsAr = array_map(fn($id) => $prefix . $id, $eventIdIntAr);
+                } else {
+                    $eventIdsAr = []; // Все отфильтрованы как дубликаты
+                }
+            }
+            
+            $this->duplicateCount += $countCurIds - count($eventIdsAr);
+
+            if (!empty($eventIdsAr)) {
+                $eventStr = '&object%5B%5D=' . implode('&object%5B%5D=', $eventIdsAr);
+                $linksAr[] = $this->baseUrl . '/traunreut/de/action/items?widgetToken=' . $token . '&outputType=itemsPage' . $eventStr . '&layout=listitem&showDate=1';
+            }
+        });
+
+        return $linksAr;
+    }
+
+    private function fetchEventDetails(array $linksAr, string $token): array
+    {
+        $client = new HttpBrowser(HttpClient::create());
+        $client->setServerParameter('HTTP_REFERER', $this->baseUrl . '/traunreut/?widgetToken=' . $token . '&');
+        
+        $events = [];
+        foreach ($linksAr as $link) {
+            $itemCrawler = $client->request('GET', $link);
+            $events = array_merge($events, $this->parseEvents($itemCrawler));
+        }
+        
+        return $events;
     }
 
     /**
      * Парсинг HTML и получение массива событий
      */
+    /**
+     * Парсинг HTML и получение массива событий
+     */
     public function parseEvents(Crawler $crawler): array
     {
-        $events = $crawler
-            ->filter($this->parseConfig['parse']['event_list_selector'])
-            ->each(fn(Crawler $node) => $this->parseEventNode($node));
+        $events = parent::parseEvents($crawler);
 
-        return array_values(array_filter($events, fn(?array $event): bool => $event !== null));
+        $seen = []; // uniqueKey => index in $events
+
+        foreach ($events as $index => &$event) {
+            $title = $event['title'] ?? '';
+            unset($event['title']);
+
+            $uniqueKey = $event['start_date'] . '_' . $title . '_' . $event['city'];
+            unset($event['city']);
+
+            if (isset($seen[$uniqueKey])) {
+                $prevIndex = $seen[$uniqueKey];
+                $events[$prevIndex]['deleted_at'] = now();
+                ++$this->duplicateCount;
+                // Since parseEventNode incremented successCount, we technically have a "successful parse" 
+                // but it's a duplicate. The original code didn't count it as success.
+                // We should decrement successCount to match original logic if we want strict parity,
+                // or accept that it's a "success" that is also a "duplicate".
+                // Let's decrement to keep stats accurate to "saved" events (minus soft deleted).
+                // Actually original code: if duplicate -> duplicateCount++, else successCount++.
+                // Here we have successCount++ already. So we decrement it.
+                --$this->successCount;
+            }
+
+            $seen[$uniqueKey] = $index;
+        }
+        unset($event);
+
+        return array_values($events);
     }
 
     /**
      * Парсинг отдельного узла с событием
      */
-    private function parseEventNode(Crawler $node): ?array
+    /**
+     * Парсинг отдельного узла с событием
+     */
+    protected function parseEventNode(Crawler $node): ?array
     {
         try {
             $eventId = $this->extractEventId($node);
@@ -138,24 +182,27 @@ class TraunreutController extends BaseParserController
 
             $location = $this->parseLocation($infoText);
             // Removing city from location
-            $city = $this->parseCity($location);
+            $zip = null;
+            $cityName = $this->parseCity($location, $zip);
+            $cityId = $this->getCityId($cityName, $zip);
 
-            if ($this->checkExistByDateTitleCity($dates['start'], $title, $city)) {
-                $eventsRuId = EventRu::where('title_de', $title)->value('id');
-                if ($eventsRuId) {
-                    $count = Event::where(['start_date' => $dates['start'], 'events_ru_id' => $eventsRuId, 'city' => $city])->delete();
+            if ($this->checkExistByDateTitleCity($dates['start'], $title, $cityId)) {
+                $eventTitleId = EventTitle::where('title_de', $title)->value('id');
+                if ($eventTitleId) {
+                    $count = Event::where(['start_date' => $dates['start'], 'event_title_id' => $eventTitleId, 'city_id' => $cityId])->delete();
                     $this->duplicateCount += $count;
                 }
             }
 
-            $events_ru_id = $this->getEventRuIdByTitle($title);
+            $eventTitleId = $this->getEventTitleId($title);
             $category = $this->filterNodeText($node, $sourceParse['category_selector']);
             $description = $this->filterNodeText($node, $sourceParse['description_selector']);
-            $eventTypes = $this->determineEventTypes($category, $title, $description);
+            $eventTypeIds = $this->determineEventTypes($category, $title, $description);
             $currentDate = date('Y-m-d H:i:s');
 
             $eventRec = [
-                'events_ru_id' => $events_ru_id,
+                // 'title' => $title,
+                'event_title_id' => $eventTitleId,
                 'site' => $this->parseConfig['site'],
                 'event_id' => $eventId,
                 'category' => $category ?: null,
@@ -165,9 +212,9 @@ class TraunreutController extends BaseParserController
                 'end_date' => $dates['end'],
                 'location' => $location,
                 'link' => $this->extractLink($node),
-                'region' => $this->region,
-                'city' => $city,
-                'event_types' => $eventTypes ? json_encode($eventTypes, JSON_UNESCAPED_UNICODE) : null,
+                'city' => $cityName,
+                'city_id' => $cityId,
+                'event_type_ids' => $eventTypeIds, // Store IDs separately for later attachment
                 'source' => $this->source,
                 'description' => $this->cleanText($description),
                 'price' => null, // В данном HTML нет информации о ценах
@@ -175,9 +222,11 @@ class TraunreutController extends BaseParserController
                 'debug_html' => $node->html(),
                 'created_at' => $currentDate,
                 'updated_at' => $currentDate,
+                'deleted_at' => null,
             ];
 
             ++$this->successCount;
+
             return $eventRec;
         } catch (Throwable $e) {
             ++$this->errorCount;

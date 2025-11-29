@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventRu;
+use App\Models\EventTitle;
 use DateTime;
 use Exception;
 use Illuminate\Support\Str;
@@ -11,101 +12,94 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class ParseK1Controller extends BaseParserController
 {
-    public function run()
+    public function fetchEvents(): array
     {
-        $this->log('Начинаем парсинг: ' . $this->parseConfig['url']);
+        $crawler = $this->client->request('GET', $this->parseConfig['url']);
 
-        try {
-            if (!$this->isLocalMode()) {
-                $this->getProcessedIdEvents();
-                $this->getProcessedHashEvents();
-            }
-
-            $crawler = $this->client->request('GET', $this->parseConfig['url']);
-
-            if ($this->parseConfig['parse']['start_block_selector']) {
-                $crawler = $crawler->filter($this->parseConfig['parse']['start_block_selector']);
-            }
-
-            $events = $crawler->filter($this->parseConfig['parse']['event_list_selector']);
-            $events->each(function (Crawler $event) {
-                try {
-                    ++$this->eventCount;
-                    $link = $this->cleanText($event->filter('a')->last()->attr('href'));
-                    $eventId = (int) Str::afterLast($link, '/');
-                    if ($this->checkExistEventById($eventId)) {
-                        ++$this->duplicateCount;
-                        return null;
-                    }
-
-                    $sourceParse = $this->parseConfig['parse'];
-
-                    $title = $this->cleanText($event->attr($sourceParse['title_selector']));
-                    $date = $this->cleanText($event->attr($sourceParse['date_selector']));
-                    $customDataSelector = 'p.text-gray-600.leading-relaxed';
-                    $customData = $event->filter($customDataSelector);
-                    $time = $this->cleanText($customData->eq(0)->text());
-                    $checkTime = preg_match('#(\d{1,2}:\d{2}) Uhr#', $time, $matches);
-                    if ($checkTime) {
-                        $date .= ' ' . $matches[1];
-                        $dt = DateTime::createFromFormat('d.m.Y H:i', $date);
-                    } else {
-                        $dt = DateTime::createFromFormat('d.m.Y', $date);
-                    }
-                    $startDate = $dt ? $dt->format('Y-m-d H:i:s') : NULL;
-
-                    if ($this->checkExistByDateTitleCity($startDate, $title, $this->parseConfig['city'])) {
-                        $eventsRuId = EventRu::where('title_de', $title)->value('id');
-                        if ($eventsRuId) {
-                            $count = Event::where(['start_date' => $startDate, 'events_ru_id' => $eventsRuId, 'city' => $this->parseConfig['city']])->delete();
-                            $this->duplicateCount += $count;
-                        }
-                    }
-
-                    $events_ru_id = $this->getEventRuIdByTitle($title);
-                    $artist = $this->cleanText($event->attr($sourceParse['artist_selector']));
-                    $category = $this->cleanText($event->attr($sourceParse['category_selector']));
-                    $location = $this->cleanText($customData->eq(2)->text());
-                    $img = $event->filter('img')->first();
-                    $imgSrc = $this->cleanText($img->attr('src'));
-                    $currentDate = date('Y-m-d H:i:s');
-
-                    $eventRec = [
-                        'events_ru_id' => $events_ru_id,
-                        'site' => $this->parseConfig['site'],
-                        'event_id' => $eventId,
-                        'category' => $category,
-                        'artist' => $artist,
-                        'img' => $imgSrc,
-                        'start_date' => $startDate,
-                        'end_date' => null,
-                        'location' => $location,
-                        'link' => $link,
-                        'region' => $this->parseConfig['region'],
-                        'city' => $this->parseConfig['city'],
-                        'event_types' => json_encode($this->parseConfig['event_types'], JSON_UNESCAPED_UNICODE),
-                        'source' => $this->parseConfig['url'],
-                        'description' => null,
-                        'price' => null, // В данном HTML нет информации о ценах
-                        'is_active' => 1,
-                        'debug_html' => $event->html(),
-                        'created_at' => $currentDate,
-                        'updated_at' => $currentDate,
-                    ];
-
-                    Event::insert($eventRec);
-                    ++$this->successCount;
-                } catch (Exception $e) {
-                    ++$this->errorCount;
-                    $this->log('Ошибка при обработке события: ' . $e->getMessage(), 'ERROR');
-                }
-            });
-        } catch (Exception $e) {
-            $this->log('Критическая ошибка при парсинге ' . $this->parseConfig['url'] . ': ' . $e->getMessage(), 'ERROR');
+        if ($this->parseConfig['parse']['start_block_selector']) {
+            $crawler = $crawler->filter($this->parseConfig['parse']['start_block_selector']);
         }
 
-        $this->log('Завершен парсинг ' . $this->parseConfig['url'] . ': найдено ' . $this->eventCount . ', добавлено ' . $this->successCount .
-            ', дубликатов ' . $this->duplicateCount . ', ошибок ' . $this->errorCount);
+        return $this->parseEvents($crawler);
     }
+
+    protected function parseEventNode(Crawler $node): ?array
+    {
+        try {
+            ++$this->eventCount;
+            $link = $this->cleanText($node->filter('a')->last()->attr('href'));
+            $eventId = (int) Str::afterLast($link, '/');
+            
+            if ($this->checkExistEventById($eventId)) {
+                ++$this->duplicateCount;
+                return null;
+            }
+
+            $sourceParse = $this->parseConfig['parse'];
+
+            $title = $this->cleanText($node->attr($sourceParse['title_selector']));
+            $date = $this->cleanText($node->attr($sourceParse['date_selector']));
+            $customDataSelector = 'p.text-gray-600.leading-relaxed';
+            $customData = $node->filter($customDataSelector);
+            $time = $this->cleanText($customData->eq(0)->text());
+            
+            $dates = $this->parseDateTime($date . ' / ' . $time);
+            $startDate = $dates['start'];
+
+            $cityId = $this->getCityId($this->parseConfig['city']);
+
+            if ($this->checkExistByDateTitleCity($startDate, $title, $cityId)) {
+                $eventTitleId = EventTitle::where('title_de', $title)->value('id');
+                if ($eventTitleId) {
+                    $count = Event::where(['start_date' => $startDate, 'event_title_id' => $eventTitleId, 'city_id' => $cityId])->delete();
+                    $this->duplicateCount += $count;
+                }
+            }
+
+            $eventTitleId = $this->getEventTitleId($title);
+            $artist = $this->cleanText($node->attr($sourceParse['artist_selector']));
+            $category = $this->cleanText($node->attr($sourceParse['category_selector']));
+            $location = $this->cleanText($customData->eq(2)->text());
+            $img = $node->filter('img')->first();
+            $imgSrc = $this->cleanText($img->attr('src'));
+            $currentDate = date('Y-m-d H:i:s');
+
+            $eventRec = [
+                // 'title' => $title,
+                'event_title_id' => $eventTitleId,
+                'site' => $this->parseConfig['site'],
+                'event_id' => $eventId,
+                'category' => $category,
+                'artist' => $artist,
+                'img' => $imgSrc,
+                'start_date' => $startDate,
+                'end_date' => null,
+                'location' => $location,
+                'link' => $link,
+                'city_id' => $cityId,
+                'event_type_ids' => $this->parseConfig['event_types'] ?? [],
+                'source' => $this->parseConfig['url'],
+                'description' => null,
+                'price' => null,
+                'is_active' => 1,
+                'debug_html' => $node->html(),
+                'created_at' => $currentDate,
+                'updated_at' => $currentDate,
+                'deleted_at' => null,
+            ];
+
+            $this->processedIdEvents[] = $eventId;
+            ++$this->successCount;
+
+            return $eventRec;
+
+        } catch (Exception $e) {
+            ++$this->errorCount;
+            $this->log('Ошибка при обработке события: ' . $e->getMessage(), 'ERROR');
+            return null;
+        }
+    }
+
+
 
 }
