@@ -280,7 +280,10 @@ abstract class BaseParserController extends Controller
             return true;
         }
 
-        $existing = Event::where('title', $event['title'])
+        // Check for existing event with same title (via relation), start_date
+        $existing = Event::whereHas('eventTitle', function ($query) use ($event) {
+                $query->where('title_de', $event['title']);
+            })
             ->where('start_date', $event['start_date'])
             ->first();
 

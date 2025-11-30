@@ -16,7 +16,6 @@ class Event extends Model
         'event_id',
         'category',
         'artist',
-        'title',
         'img',
         'start_date',
         'end_date',

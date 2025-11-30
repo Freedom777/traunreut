@@ -3,10 +3,15 @@
 namespace Tests\Unit;
 
 use App\Http\Controllers\BaseParserController;
+use App\Models\EventType;
+use App\Models\EventTypeKeyword;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class BaseParserTest extends TestCase
 {
+    use RefreshDatabase;
+
     private TestableBaseParserController $controller;
 
     protected function setUp(): void
@@ -76,17 +81,26 @@ class BaseParserTest extends TestCase
 
     public function test_determine_event_types()
     {
+        // Seed data
+        $sportType = EventType::create(['name' => 'Sport']);
+        EventTypeKeyword::create(['keyword' => 'yoga', 'event_type_id' => $sportType->id]);
+
+        $kulturType = EventType::create(['name' => 'Kultur']);
+        EventTypeKeyword::create(['keyword' => 'museum', 'event_type_id' => $kulturType->id]);
+
         // Sport
         $types = $this->controller->testDetermineEventTypes('Sport', 'Yoga Class', 'Relaxing yoga');
-        $this->assertContains('Sport', $types);
+        $this->assertContains($sportType->id, $types);
 
         // Kultur
         $types = $this->controller->testDetermineEventTypes('', 'Art Exhibition', 'Visit our museum');
-        $this->assertContains('Kultur', $types);
+        $this->assertContains($kulturType->id, $types);
 
         // Fallback to category
         $types = $this->controller->testDetermineEventTypes('Concert', 'Some Band', 'Music');
-        $this->assertContains('Concert', $types);
+        $concertType = EventType::where('name', 'Concert')->first();
+        $this->assertNotNull($concertType);
+        $this->assertContains($concertType->id, $types);
     }
     public function test_run_flow()
     {

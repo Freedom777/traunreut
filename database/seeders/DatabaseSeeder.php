@@ -13,6 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed states (required for cities)
+        $this->call(StateSeeder::class);
+        
+        // Seed event types and keywords
+        $this->call(EventTypeSeeder::class);
+        
         // User::factory(10)->create();
 
         User::factory()->create([

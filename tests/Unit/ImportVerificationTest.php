@@ -4,10 +4,22 @@ namespace Tests\Unit;
 
 use App\Models\City;
 use App\Models\State;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ImportVerificationTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        // Seed states and cities for import verification
+        $this->seed(\Database\Seeders\StateSeeder::class);
+        $this->seed(\Database\Seeders\TestCitySeeder::class);
+    }
+    
     public function test_import_results()
     {
         // Check states count (16 German states)

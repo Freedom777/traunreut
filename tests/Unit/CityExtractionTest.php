@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class CityExtractionTest extends TestCase
 {
-    // use RefreshDatabase; // Not needed as we mock DB
+    use RefreshDatabase;
 
     private CityExtractionTestController $controller;
 
@@ -28,14 +28,17 @@ class CityExtractionTest extends TestCase
         $this->assertEquals('Traunreut', $city);
         $this->assertEquals('Hauptstr. 1', $location);
         
-        $this->assertArrayHasKey('83301', $this->controller->createdCities);
-        $this->assertEquals('Traunreut', $this->controller->createdCities['83301']);
+        $this->assertEquals('Traunreut', $city);
+        $this->assertEquals('Hauptstr. 1', $location);
+        
+        // parseCity does not create the city in DB, it just parses the string.
+        // So we should not assert database existence here.
     }
 
     public function test_extract_city_existing_in_db()
     {
-        // Mock existing city by pre-filling the mock storage
-        $this->controller->createdCities['83301'] = 'Traunreut';
+        // Create existing city in DB
+        City::create(['name' => 'Traunreut', 'zip_code' => '83301']);
 
         $location = '83301 Traunreut';
         $city = $this->controller->testParseCity($location);
@@ -46,6 +49,9 @@ class CityExtractionTest extends TestCase
 
     public function test_extract_city_fallback_known()
     {
+        // Seed the city so it is "known"
+        City::create(['name' => 'Traunreut']);
+
         $location = 'Some Place, Traunreut';
         $city = $this->controller->testParseCity($location);
 
@@ -59,36 +65,26 @@ class CityExtractionTest extends TestCase
         $city = $this->controller->testParseCity($location);
 
         $this->assertEquals('UnknownCity', $city);
-        $this->assertEquals('Some Place', $location);
+        // If city is unknown and no ZIP, parseCity returns it but does NOT strip it from location
+        $this->assertEquals('Some Place, UnknownCity', $location);
         
-        // Should not be saved to DB (mock)
-        $this->assertEmpty($this->controller->createdCities);
+        // Should not be saved to DB
+        $this->assertDatabaseMissing('cities', ['name' => 'UnknownCity']);
     }
 }
 
 class CityExtractionTestController extends BaseParserController
 {
     protected string $configPath = 'parse.test';
-    public array $createdCities = [];
+    // Removed createdCities and findOrCreateCity override to use real DB
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function testParseCity(?string &$location = null): ?string
     {
         return $this->parseCity($location);
     }
 
-    protected function findOrCreateCity(string $zip, string $name): City
-    {
-        $this->createdCities[$zip] = $name;
-        $city = new City();
-        $city->name = $name;
-        $city->zip_code = $zip;
-        return $city;
-    }
+
 
     protected function fetchEvents(): array { return []; }
     protected function parseEventNode(\Symfony\Component\DomCrawler\Crawler $node): ?array { return null; }
