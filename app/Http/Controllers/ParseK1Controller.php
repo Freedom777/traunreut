@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-use App\Models\EventRu;
 use App\Models\EventTitle;
 use DateTime;
 use Exception;

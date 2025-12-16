@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\DeeplApiCount;
 use Carbon\Carbon;
-use App\Models\EventRu;
+use App\Models\EventTitle;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Throwable;
@@ -25,7 +25,7 @@ class TranslateCommand extends Command
 
     public function handle()
     {
-        $emptyTranslations = EventRu::whereNull('title_ru')->pluck('title_de', 'id')->toArray();
+        $emptyTranslations = EventTitle::whereNull('title_ru')->pluck('title_de', 'id')->toArray();
         if (!$emptyTranslations) {
             $this->info('✅ Перевод не требуется!');
             return self::SUCCESS;
@@ -117,8 +117,8 @@ class TranslateCommand extends Command
             $deeplApiCount->save();
 
             $translations = array_combine($translationKeys, $allTranslations);
-            foreach ($translations as $eventRuId => $translation) {
-                EventRu::where('id', $eventRuId)->update(['title_ru' => $translation['text']]);
+            foreach ($translations as $eventTitleId => $translation) {
+                EventTitle::where('id', $eventTitleId)->update(['title_ru' => $translation['text']]);
             }
 
             $this->info('✅ Перевод успешно завершён!');

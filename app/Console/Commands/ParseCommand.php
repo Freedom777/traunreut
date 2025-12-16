@@ -6,7 +6,7 @@ use App\Http\Controllers\ParseK1Controller;
 use App\Http\Controllers\TraunreutController;
 use App\Http\Controllers\TraunsteinController;
 use App\Models\Event;
-use App\Models\EventRu;
+use App\Models\EventTitle;
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 
@@ -133,28 +133,29 @@ class ParseCommand extends Command
     }
 
     protected function getVocabulary() {
-        $eventTitles = Event::distinct()->get(['title']);
+        $eventTitles = EventTitle::distinct()->get(['title_de']);
         foreach ($eventTitles as $eventTitle) {
-            file_put_contents('vocabulary.txt', $eventTitle->title . PHP_EOL, FILE_APPEND);
+            file_put_contents('vocabulary.txt', $eventTitle->title_de . PHP_EOL, FILE_APPEND);
         }
     }
 
     protected function updateVocabulary()
     {
-        $eventTitles = Event::distinct()->get(['id', 'title']);
+        $eventTitles = EventTitle::all();
         $vocDeutschAr = file('vocabulary.txt', FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
         $vocRussianAr = file('vocabulary_ru.txt', FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
-        $vocabularyAr = array_combine($vocDeutschAr, $vocRussianAr);
-        $insertDataAr = [];
-        $nowDate = CarbonImmutable::now()->format('Y-m-d H:i:s');
-        foreach ($eventTitles as $eventTitle) {
-            $insertDataAr[] = [
-                'id' => $eventTitle->id,
-                'title' => $vocabularyAr[$eventTitle->title],
-                'created_at' => $nowDate,
-                'updated_at' => $nowDate,
-            ];
+        // Ensure arrays are valid
+        if (!$vocDeutschAr || !$vocRussianAr) {
+            $this->error('Vocabulary files empty or missing');
+            return;
         }
-        EventRu::insert($insertDataAr);
+        $vocabularyAr = array_combine($vocDeutschAr, $vocRussianAr);
+        
+        foreach ($eventTitles as $eventTitle) {
+            if (isset($vocabularyAr[$eventTitle->title_de])) {
+                $eventTitle->title_ru = $vocabularyAr[$eventTitle->title_de];
+                $eventTitle->save();
+            }
+        }
     }
 }

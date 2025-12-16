@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
         
         // Seed event types and keywords
         $this->call(EventTypeSeeder::class);
+
+        // Seed event titles
+        $this->call(EventTitleSeeder::class);
         
         // User::factory(10)->create();
 
