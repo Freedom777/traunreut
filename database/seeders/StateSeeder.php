@@ -26,6 +26,8 @@ class StateSeeder extends Seeder
             ['code' => 'ST', 'name' => 'Sachsen-Anhalt'],
             ['code' => 'SH', 'name' => 'Schleswig-Holstein'],
             ['code' => 'TH', 'name' => 'Thüringen'],
+            ['code' => 'AT', 'name' => 'Österreich'],
+            ['code' => 'UN', 'name' => ''],
         ];
 
         foreach ($states as $state) {

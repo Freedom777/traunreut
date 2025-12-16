@@ -16,6 +16,9 @@ class DatabaseSeeder extends Seeder
         // Seed states (required for cities)
         $this->call(StateSeeder::class);
         
+        // Seed cities
+        $this->call(CitySeeder::class);
+        
         // Seed event types and keywords
         $this->call(EventTypeSeeder::class);
         

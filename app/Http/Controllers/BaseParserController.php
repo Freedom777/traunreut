@@ -318,13 +318,51 @@ abstract class BaseParserController extends Controller
      */
     protected function getEventTitleId(string $title): int
     {
+        // 1. Exact Match
         $eventTitleId = EventTitle::where('title_de', $title)->value('id');
-        if (!$eventTitleId) {
-            $eventTitle = new EventTitle();
-            $eventTitle->title_de = $title;
-            $eventTitle->save();
-            $eventTitleId = $eventTitle->id;
+        if ($eventTitleId) {
+            return $eventTitleId;
         }
+
+        // 2. Case Insensitive Check (Strict)
+        $similarTitle = EventTitle::whereRaw('LOWER(title_de) = ?', [mb_strtolower($title)])->first();
+        if ($similarTitle) {
+            // Log the merge mapping for debugging
+            if ($this->isDebugMode()) {
+               $this->log("Title merged by case: '$title' -> '{$similarTitle->title_de}'");
+            }
+            return $similarTitle->id;
+        }
+
+        // 3. Typo Check (Levenshtein) - Optional/Lightweight
+        // Running on all titles is too slow. We could fetch titles with same first letter and length +/- 1.
+        // For now, let's stick to Case Insensitive which covers 80% of accidental duplicates.
+        // User asked for "similar" checks, so let's try a optimized fetch.
+        
+        // Fetch candidates with same first 3 letters matching (optimization)
+        if (mb_strlen($title) > 5) {
+            $prefix = mb_substr($title, 0, 3);
+            $candidates = EventTitle::where('title_de', 'like', $prefix . '%')->get();
+            
+            foreach ($candidates as $cand) {
+                // Must be very close in length
+                if (abs(mb_strlen($cand->title_de) - mb_strlen($title)) > 2) continue;
+                
+                $lev = levenshtein($title, $cand->title_de);
+                if ($lev > 0 && $lev <= 1) { // Very strict: only 1 char difference allowed for auto-merge on import
+                    if ($this->isDebugMode()) {
+                        $this->log("Title merged by typo: '$title' -> '{$cand->title_de}'");
+                    }
+                    return $cand->id;
+                }
+            }
+        }
+
+        $eventTitle = new EventTitle();
+        $eventTitle->title_de = $title;
+        $eventTitle->save();
+        $eventTitleId = $eventTitle->id;
+        
         return $eventTitleId;
     }
 

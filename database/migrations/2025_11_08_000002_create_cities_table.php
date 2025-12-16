@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('zip_code')->nullable()->index();
             $table->string('name');
             $table->string('state_code', 2)->nullable();
+            $table->boolean('is_district')->default(false);
             $table->foreign('state_code')->references('code')->on('states');
             $table->timestamps();
         });
