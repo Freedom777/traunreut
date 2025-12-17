@@ -91,20 +91,20 @@ php artisan import:cities storage/data/german-postcodes.csv
 #### Парсинг всех источников
 
 ```bash
-php artisan parse:all
+php artisan parse:site --site=all
 ```
 
 #### Парсинг конкретного источника
 
 ```bash
 # Traunreut
-php artisan parse:traunreut
+php artisan parse:site --site=traunreut
 
 # K1 Rosenheim
-php artisan parse:k1
+php artisan parse:site --site=k1
 
 # Traunstein
-php artisan parse:traunstein
+php artisan parse:site --site=traunstein
 ```
 
 ### Настройка парсеров
@@ -136,18 +136,24 @@ return [
 * * * * * cd /path/to/traunreut && php artisan schedule:run >> /dev/null 2>&1
 
 # Windows (Task Scheduler)
-# Создайте задачу, которая запускает каждую минуту:
-# php C:\laragon\www\traunreut\artisan schedule:run
+# Создайте одну задачу, которая запускается каждую минуту:
+# php C:\laragon\www\traunreut\artisan schedule:run >> NUL 2>&1
 ```
 
-В `app/Console/Kernel.php` настройте расписание:
+В `routes/console.php` настройте расписание (уже настроено):
 
 ```php
-protected function schedule(Schedule $schedule)
-{
-    // Парсинг каждый день в 6:00
-    $schedule->command('parse:all')->dailyAt('06:00');
-}
+use Illuminate\Support\Facades\Schedule;
+
+// Парсинг каждый четверг в 7:30
+Schedule::command('parse:site --site=all')
+    ->weeklyOn(4, '07:30')
+    ->appendOutputTo(storage_path('logs/parse.log'));
+
+// Перевод каждый четверг в 7:50
+Schedule::command('translate:words')
+    ->weeklyOn(4, '07:50')
+    ->appendOutputTo(storage_path('logs/translate.log'));
 ```
 
 ## Управление переводами событий
@@ -178,7 +184,7 @@ DEEPL_API_KEY=your_deepl_api_key
 Запустите команду перевода:
 
 ```bash
-php artisan translate:titles
+php artisan translate:words
 ```
 
 Эта команда:
@@ -362,11 +368,6 @@ php artisan route:list
 php artisan tinker
 >>> \App\Models\Event::with('eventTitle')->latest()->take(5)->get()
 
-# Удаление старых событий
-php artisan events:cleanup --days=30
-
-# Проверка дубликатов
-php artisan events:check-duplicates
 ```
 
 ## Структура проекта
@@ -399,11 +400,8 @@ traunreut/
 ### Проблема: Дубликаты событий
 
 ```bash
-# Проверить дубликаты
-php artisan events:check-duplicates
-
 # Удалить дубликаты (осторожно!)
-php artisan events:remove-duplicates
+php artisan remove:duplicate
 ```
 
 ### Проблема: Переводы не работают

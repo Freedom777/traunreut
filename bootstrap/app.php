@@ -16,8 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'log.telegram' => \App\Http\Middleware\LogTelegramRequests::class,
         ]);
 
-        // Полностью отключаем веб-middleware
-        $middleware->group('web', []);
+        $middleware->validateCsrfTokens(except: [
+            'telegraph/*',
+        ]);
 
         // Убираем сессии из API middleware
         $middleware->api(remove: [

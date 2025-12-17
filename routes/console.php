@@ -3,12 +3,15 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
-/*
-crontab -e
-# Только crontab
-30 23 28-31 * * [ $(date -d tomorrow +\%d) -eq 1 ] && cd /var/www/traunreut && php artisan parse:site --site=all >> /var/www/traunreut/storage/logs/parse.log 2>&1
-50 23 28-31 * * [ $(date -d tomorrow +\%d) -eq 1 ] && cd /var/www/traunreut && php artisan translate:words >> /var/www/traunreut/storage/logs/translate.log 2>&1
-*/
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('parse:site --site=all')
+    ->weeklyOn(4, '07:30')
+    ->appendOutputTo(storage_path('logs/parse.log'));
+
+Schedule::command('translate:words')
+    ->weeklyOn(4, '07:50')
+    ->appendOutputTo(storage_path('logs/translate.log'));
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
