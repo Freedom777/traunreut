@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('states', function (Blueprint $table) {
-            $table->collation = 'utf8mb4_0900_as_cs';
             $table->string('code', 2)->primary();
             $table->string('name')->unique();
             $table->timestamps();

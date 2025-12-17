@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('events', function (Blueprint $table) {
-            $table->collation = 'utf8mb4_0900_as_cs';
             $table->id();
             $table->foreignId('event_title_id')->constrained('event_titles')->onDelete('cascade');
             $table->string('site');

@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cities', function (Blueprint $table) {
-            $table->collation = 'utf8mb4_0900_as_cs';
             $table->id();
             $table->string('zip_code')->nullable()->index();
             $table->string('name');
