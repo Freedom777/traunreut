@@ -360,7 +360,12 @@ class TelegramWebhookHandler extends WebhookHandler
         }
 
         // Формируем заголовок периода (БЕЗ даты, только описание периода)
-        $titleDate = $this->formatPeriodTitle($startDate, $endDate, $city, $languageCode, false);
+        $cityTitle = $city;
+        if ($city && $city !== self::ALL_CITIES) {
+            $cityTitle = $events->first()?->city?->name ?? \App\Models\City::find($city)?->name ?? $city;
+        }
+
+        $titleDate = $this->formatPeriodTitle($startDate, $endDate, $cityTitle, $languageCode, false);
 
         $result = $this->formatEventsMessages(
             $events,
