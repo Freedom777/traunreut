@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\City;
 use App\Models\EventTitle;
 use App\Models\EventType;
+use App\Models\EventTypeKeyword;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\BrowserKit\HttpBrowser;
@@ -479,9 +480,9 @@ abstract class BaseParserController extends Controller
         return $city->id;
     }
 
-    protected function findOrCreateCity(string $zip, string $name): \App\Models\City
+    protected function findOrCreateCity(string $zip, string $name): City
     {
-        return \App\Models\City::firstOrCreate(
+        return City::firstOrCreate(
             ['zip_code' => $zip],
             ['name' => $name]
         );
@@ -489,6 +490,6 @@ abstract class BaseParserController extends Controller
 
     protected function getEventKeywords()
     {
-        return \App\Models\EventTypeKeyword::all();
+        return EventTypeKeyword::all();
     }
 }
