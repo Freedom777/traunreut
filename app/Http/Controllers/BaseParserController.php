@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\City;
 use App\Models\EventTitle;
+use App\Models\EventType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\BrowserKit\HttpBrowser;
@@ -173,7 +174,7 @@ abstract class BaseParserController extends Controller
 
             // Insert events
             Event::insert($events);
-            
+
             // Attach event types via many-to-many relationship
             if (!empty($eventTypesMap)) {
                 // Get the inserted events by their event_id
@@ -254,7 +255,7 @@ abstract class BaseParserController extends Controller
                     mb_strtolower($title),
                     $similarity
                 );
-                
+
                 if ($similarity >= self::TITLE_SIMILARITY_THRESHOLD) {
                     return true;
                 }
@@ -267,41 +268,7 @@ abstract class BaseParserController extends Controller
             'title' => $title,
             'city_id' => $cityId
         ];
-        
-        return false;
-    }
 
-    protected function isEventDuplicateOld(array $event): bool
-    {
-        $hash = md5(strtolower($event['title'] . $event['start_date'] . $event['location']));
-
-        if (in_array($hash, $this->processedIdEvents, true)) {
-            return true;
-        }
-
-        // Check for existing event with same title (via relation), start_date
-        $existing = Event::whereHas('eventTitle', function ($query) use ($event) {
-                $query->where('title_de', $event['title']);
-            })
-            ->where('start_date', $event['start_date'])
-            ->first();
-
-        if ($existing) {
-            if ($existing->location === $event['location']) {
-                return true;
-            }
-
-            if ($existing->location && $event['location']) {
-                $similarity = 0;
-                similar_text(strtolower($existing->location), strtolower($event['location']), $similarity);
-
-                if ($similarity > 80) {
-                    return true;
-                }
-            }
-        }
-
-        $this->processedIdEvents[] = $hash;
         return false;
     }
 
@@ -337,16 +304,16 @@ abstract class BaseParserController extends Controller
         // Running on all titles is too slow. We could fetch titles with same first letter and length +/- 1.
         // For now, let's stick to Case Insensitive which covers 80% of accidental duplicates.
         // User asked for "similar" checks, so let's try a optimized fetch.
-        
+
         // Fetch candidates with same first 3 letters matching (optimization)
         if (mb_strlen($title) > 5) {
             $prefix = mb_substr($title, 0, 3);
             $candidates = EventTitle::where('title_de', 'like', $prefix . '%')->get();
-            
+
             foreach ($candidates as $cand) {
                 // Must be very close in length
                 if (abs(mb_strlen($cand->title_de) - mb_strlen($title)) > 2) continue;
-                
+
                 $lev = levenshtein($title, $cand->title_de);
                 if ($lev > 0 && $lev <= 1) { // Very strict: only 1 char difference allowed for auto-merge on import
                     if ($this->isDebugMode()) {
@@ -360,9 +327,8 @@ abstract class BaseParserController extends Controller
         $eventTitle = new EventTitle();
         $eventTitle->title_de = $title;
         $eventTitle->save();
-        $eventTitleId = $eventTitle->id;
-        
-        return $eventTitleId;
+
+        return $eventTitle->id;
     }
 
     /**
@@ -412,7 +378,7 @@ abstract class BaseParserController extends Controller
     protected function determineEventTypes(string $category, string $title, string $description): array
     {
         $content = mb_strtolower($category . ' ' . $title . ' ' . $description);
-        
+
         // Получаем ключевые слова из БД с типами событий
         static $keywords = null;
         if ($keywords === null) {
@@ -432,7 +398,7 @@ abstract class BaseParserController extends Controller
             $firstCategory = trim(explode('&', $category)[0]);
             // Пытаемся найти или создать тип события по имени категории
             if ($firstCategory) {
-                $eventType = \App\Models\EventType::firstOrCreate(['name' => $firstCategory]);
+                $eventType = EventType::firstOrCreate(['name' => $firstCategory]);
                 $typeIds[] = $eventType->id;
             }
         }
@@ -454,7 +420,7 @@ abstract class BaseParserController extends Controller
         if (preg_match('/(\d{5})\s+([^,]+)/', $location, $matches)) {
             $zip = $matches[1];
             $cityName = trim($matches[2]);
-            
+
             // Удаляем ZIP и город из локации, оставляя только улицу/место
             $location = trim(str_replace($matches[0], '', $location));
             $location = trim($location, ', ');
@@ -465,9 +431,9 @@ abstract class BaseParserController extends Controller
         // Если ZIP не найден, пробуем найти город в конце строки, сверяясь с БД
         $parts = array_map('trim', explode(',', $location));
         $possibleCity = end($parts);
-        
+
         // Проверяем точное совпадение с городами в БД
-        $cityExists = \App\Models\City::where('name', $possibleCity)->exists();
+        $cityExists = City::where('name', $possibleCity)->exists();
 
         if ($cityExists) {
             // Удаляем последнюю часть из локации
@@ -488,7 +454,7 @@ abstract class BaseParserController extends Controller
         if (empty($cityName)) {
             return null;
         }
-        
+
         // Try to find by ZIP first (most accurate)
         if ($zip) {
             $city = City::where('zip_code', $zip)->first();
@@ -496,20 +462,20 @@ abstract class BaseParserController extends Controller
                 return $city->id;
             }
         }
-        
+
         // Try to find by name
         $city = City::where('name', $cityName)->first();
         if ($city) {
             return $city->id;
         }
-        
+
         // Create new city (without state if not found)
         $city = City::create([
             'name' => $cityName,
             'zip_code' => $zip,
             'state_code' => null // Will be updated later via data migration
         ]);
-        
+
         return $city->id;
     }
 

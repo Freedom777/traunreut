@@ -5,9 +5,7 @@ namespace App\Console\Commands;
 use App\Http\Controllers\ParseK1Controller;
 use App\Http\Controllers\TraunreutController;
 use App\Http\Controllers\TraunsteinController;
-use App\Models\Event;
 use App\Models\EventTitle;
-use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 
 class ParseCommand extends Command
@@ -150,7 +148,7 @@ class ParseCommand extends Command
             return;
         }
         $vocabularyAr = array_combine($vocDeutschAr, $vocRussianAr);
-        
+
         foreach ($eventTitles as $eventTitle) {
             if (isset($vocabularyAr[$eventTitle->title_de])) {
                 $eventTitle->title_ru = $vocabularyAr[$eventTitle->title_de];

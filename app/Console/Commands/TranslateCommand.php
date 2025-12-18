@@ -82,11 +82,6 @@ class TranslateCommand extends Command
                     $queryParts[] = 'text=' . urlencode($text);
                 }
 
-                // Добавляем каждый текст как отдельное поле 'text'
-                /*foreach ($batch as $text) {
-                    $formData['text'][] = $text;
-                }*/
-
                 $queryString = implode('&', $queryParts);
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/x-www-form-urlencoded',
@@ -96,13 +91,6 @@ class TranslateCommand extends Command
                     ->withBody($queryString, 'application/x-www-form-urlencoded')
                     ->post($apiUrl)
                     ->throw();
-
-
-                /*$response = Http::timeout(15)
-                    ->retry(3, 1000)
-                    ->asForm()
-                    ->post($apiUrl, $formData)
-                    ->throw(); // выбросить исключение при HTTP ошибке*/
 
                 $data = $response->json();
                 if (!isset($data['translations'])) {
