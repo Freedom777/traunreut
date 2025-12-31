@@ -18,11 +18,11 @@ return new class extends Migration
             $table->string('event_id');
             $table->string('category')->nullable();
             $table->string('artist')->nullable();
-            $table->string('img')->nullable();
+            $table->string('img', 2083)->nullable();
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             $table->string('location')->nullable();
-            $table->string('link')->nullable();
+            $table->string('link', 2083)->nullable();
             $table->foreignId('city_id')->nullable()->constrained('cities')->onDelete('set null');
             $table->string('source')->nullable();
             $table->text('description')->nullable();
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->text('debug_html')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             // Indexes
             $table->index(['site', 'event_id']);
             $table->index('start_date');

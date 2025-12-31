@@ -28,7 +28,7 @@ class ParseK1Controller extends BaseParserController
             ++$this->eventCount;
             $link = $this->cleanText($node->filter('a')->last()->attr('href'));
             $eventId = (int) Str::afterLast($link, '/');
-            
+
             if ($this->checkExistEventById($eventId)) {
                 ++$this->duplicateCount;
                 return null;
@@ -41,7 +41,7 @@ class ParseK1Controller extends BaseParserController
             $customDataSelector = 'p.text-gray-600.leading-relaxed';
             $customData = $node->filter($customDataSelector);
             $time = $this->cleanText($customData->eq(0)->text());
-            
+
             $dates = $this->parseDateTime($date . ' / ' . $time);
             $startDate = $dates['start'];
 
@@ -62,6 +62,7 @@ class ParseK1Controller extends BaseParserController
             $img = $node->filter('img')->first();
             $imgSrc = $this->cleanText($img->attr('src'));
             $currentDate = date('Y-m-d H:i:s');
+            $eventTypeIds = $this->determineEventTypes($category, $title, '');
 
             $eventRec = [
                 // 'title' => $title,
@@ -76,8 +77,8 @@ class ParseK1Controller extends BaseParserController
                 'location' => $location,
                 'link' => $link,
                 'city_id' => $cityId,
-                'event_type_ids' => $this->parseConfig['event_types'] ?? [],
-                'source' => $this->parseConfig['url'],
+                'event_type_ids' => $eventTypeIds,
+                'source' => $this->parseConfig['site'],
                 'description' => null,
                 'price' => null,
                 'is_active' => 1,

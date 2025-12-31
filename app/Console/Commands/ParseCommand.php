@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\NaturefreundeController;
 use App\Http\Controllers\ParseK1Controller;
 use App\Http\Controllers\TraunreutController;
 use App\Http\Controllers\TraunsteinController;
@@ -38,6 +39,9 @@ class ParseCommand extends Command
             case 'traunreut':
                 $this->parseTraunreut();
             break;
+            case 'naturefreunde':
+                $this->parseNaturefreunde();
+            break;
             case 'k1':
                 $this->parseK1();
             break;
@@ -48,6 +52,7 @@ class ParseCommand extends Command
                 $this->parseTraunreut();
                 $this->parseK1();
                 $this->parseTraunstein();
+                $this->parseNaturefreunde();
             break;
             case 'vocabulary':
                 $this->getVocabulary();
@@ -58,6 +63,17 @@ class ParseCommand extends Command
         }
 
         $this->info('Завершён парсинг, сайт ' . $siteName . '.');
+    }
+
+    protected function parseNaturefreunde() {
+        $naturefreundeController = new NaturefreundeController();
+        if ($this->option('local')) {
+            $naturefreundeController->setLocalMode(true);
+        }
+        if ($this->option('debug')) {
+            $naturefreundeController->setDebugMode(true);
+        }
+        $naturefreundeController->run();
     }
 
     protected function parseK1() {

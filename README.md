@@ -51,6 +51,11 @@ TELEGRAM_BOT_TOKEN=your_bot_token_here
 php artisan key:generate
 ```
 
+Создание ссылки на storage:
+```bash
+php artisan storage:link
+```
+
 ### 3. Настройка базы данных
 
 #### Создание таблиц
@@ -103,8 +108,8 @@ php artisan parse:site --site=traunreut
 # K1 Rosenheim
 php artisan parse:site --site=k1
 
-# Traunstein
-php artisan parse:site --site=traunstein
+# Naturefreunde
+php artisan parse:site --site=naturefreunde
 ```
 
 ### Настройка парсеров

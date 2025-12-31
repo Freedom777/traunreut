@@ -20,7 +20,7 @@ class TraunreutController extends BaseParserController
     public function fetchEvents(): array
     {
         $this->region = $this->parseConfig['region'];
-        
+
         $token = $this->fetchToken();
         $linksAr = $this->fetchEventLinks($token);
 
@@ -30,7 +30,7 @@ class TraunreutController extends BaseParserController
     private function fetchToken(): string
     {
         $crawler = $this->client->request('GET', $this->parseConfig['url']);
-        
+
         // Попытка найти скрипт с токеном более надежным способом
         $scriptText = '';
         $crawler->filter('script')->each(function (Crawler $node) use (&$scriptText) {
@@ -56,17 +56,17 @@ class TraunreutController extends BaseParserController
     private function fetchEventLinks(string $token): array
     {
         $crawler = $this->client->getCrawler(); // Используем уже загруженный crawler из fetchToken (если клиент сохраняет состояние)
-        // Но лучше явно передать или запросить снова, если состояние не гарантировано. 
+        // Но лучше явно передать или запросить снова, если состояние не гарантировано.
         // В данном случае, клиент HttpBrowser сохраняет последнее состояние, но fetchToken мог быть вызван отдельно.
         // Для надежности, так как мы уже на странице, используем текущий crawler клиента.
-        
+
         $eventIdsContainer = $crawler->filter('#-IMXEVENT-results');
         if ($eventIdsContainer->count() === 0) {
              return [];
         }
-        
+
         $eventsListContainer = $eventIdsContainer->filter('div.-IMXEVNT-h-grid.-IMXEVNT-h-grid--fixed.-IMXEVNT-h-grid--margins');
-        
+
         $linksAr = [];
         $eventsListContainer->each(function (Crawler $eventContainer) use (&$linksAr, $token) {
             $eventAttr = $eventContainer->attr('data-idents');
@@ -81,14 +81,14 @@ class TraunreutController extends BaseParserController
                 $prefix = substr($eventIdsAr[0], 0, 10);
                 $eventIdIntAr = array_map(fn($e) => (int)substr($e, 10), $eventIdsAr);
                 $eventIdIntAr = array_diff($eventIdIntAr, $this->processedIdEvents);
-                
+
                 if ($eventIdIntAr) {
                     $eventIdsAr = array_map(fn($id) => $prefix . $id, $eventIdIntAr);
                 } else {
                     $eventIdsAr = []; // Все отфильтрованы как дубликаты
                 }
             }
-            
+
             $this->duplicateCount += $countCurIds - count($eventIdsAr);
 
             if (!empty($eventIdsAr)) {
@@ -104,13 +104,13 @@ class TraunreutController extends BaseParserController
     {
         $client = new HttpBrowser(HttpClient::create());
         $client->setServerParameter('HTTP_REFERER', $this->baseUrl . '/traunreut/?widgetToken=' . $token . '&');
-        
+
         $events = [];
         foreach ($linksAr as $link) {
             $itemCrawler = $client->request('GET', $link);
             $events = array_merge($events, $this->parseEvents($itemCrawler));
         }
-        
+
         return $events;
     }
 
@@ -137,7 +137,7 @@ class TraunreutController extends BaseParserController
                 $prevIndex = $seen[$uniqueKey];
                 $events[$prevIndex]['deleted_at'] = now();
                 ++$this->duplicateCount;
-                // Since parseEventNode incremented successCount, we technically have a "successful parse" 
+                // Since parseEventNode incremented successCount, we technically have a "successful parse"
                 // but it's a duplicate. The original code didn't count it as success.
                 // We should decrement successCount to match original logic if we want strict parity,
                 // or accept that it's a "success" that is also a "duplicate".
@@ -214,7 +214,7 @@ class TraunreutController extends BaseParserController
                 'city' => $cityName,
                 'city_id' => $cityId,
                 'event_type_ids' => $eventTypeIds, // Store IDs separately for later attachment
-                'source' => $this->source,
+                'source' => $this->parseConfig['site'],
                 'description' => $this->cleanText($description),
                 'price' => null, // В данном HTML нет информации о ценах
                 'is_active' => 1,
