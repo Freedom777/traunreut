@@ -447,7 +447,7 @@ class TelegramWebhookHandler extends WebhookHandler
                 '<a href="http://' . $site . '">' . $site . '</a>'
             )->implode(', ');
 
-            if ($sites->length() > 1) {
+            if ($sites->count() > 1) {
                 $title .= PHP_EOL . 'Источники: ' . $links;
             } else {
                 $title .= PHP_EOL . 'Источник: ' . $links;
