@@ -39,14 +39,24 @@ class K1Controller extends BaseParserController
 
             $title = $this->cleanText($node->attr($sourceParse['title_selector']));
             $date = $this->cleanText($node->attr($sourceParse['date_selector']));
-            $customDataSelector = 'p.text-gray-600.leading-relaxed';
-            $customData = $node->filter($customDataSelector);
-            // 30.12.2025 | 16:00 Uhr
-            $timeAr = explode(' ', $this->cleanText($customData->eq(0)->text()));
             $time = '';
-            if (isset($timeAr[2])) {
-                $time = $timeAr[2];
-            }
+            $location = '';
+            // p.text-gray-600.leading-relaxed
+            $node->filter('p')->each(function ($p) use (&$time, &$location) {
+                $text = trim($p->text());
+
+                // 30.12.2025 | 16:00 Uhr
+                if (preg_match('/(\d{2}\.\d{2}\.\d{4})\s*\|\s*(\d{2}:\d{2})/u', $text, $m)) {
+                    $time = $m[2];
+                    return;
+                }
+
+                // локация
+                // k1 Kultur- und Veranstaltungszentrum - Munastraße 1, 83301 Traunreut
+                if (preg_match('/\d{5}\s+[A-ZÄÖÜa-zäöüß]+/u', $text)) {
+                    $location = $text;
+                }
+            });
             $dates = $this->parseDateTime($date . ' / ' . $time);
             $startDate = $dates['start'];
 
@@ -63,7 +73,6 @@ class K1Controller extends BaseParserController
             $eventTitleId = $this->getEventTitleId($title);
             $artist = $this->cleanText($node->attr($sourceParse['artist_selector']));
             $category = $this->cleanText($node->attr($sourceParse['category_selector']));
-            $location = $this->cleanText($customData->eq(2)->text());
             $img = $node->filter('img')->first();
             $imgSrc = $this->cleanText($img->attr('src'));
             $currentDate = date('Y-m-d H:i:s');
