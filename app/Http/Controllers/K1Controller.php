@@ -41,8 +41,12 @@ class K1Controller extends BaseParserController
             $date = $this->cleanText($node->attr($sourceParse['date_selector']));
             $customDataSelector = 'p.text-gray-600.leading-relaxed';
             $customData = $node->filter($customDataSelector);
-            $time = $this->cleanText($customData->eq(0)->text());
-
+            // 30.12.2025 | 16:00 Uhr
+            $timeAr = explode(' ', $this->cleanText($customData->eq(0)->text()));
+            $time = '';
+            if (isset($timeAr[2])) {
+                $time = $timeAr[2];
+            }
             $dates = $this->parseDateTime($date . ' / ' . $time);
             $startDate = $dates['start'];
 
