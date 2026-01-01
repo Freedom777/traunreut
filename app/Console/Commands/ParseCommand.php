@@ -55,7 +55,7 @@ class ParseCommand extends Command
 
     private function startParse(string $controllerName) {
         $cname = ucfirst($controllerName) . 'Controller';
-        $class = '\\App\\Http\\Controllers\\' . $cname;
+        $class = 'App\\Http\\Controllers\\' . $cname;
         $controller = app($class);
         if ($this->option('local')) {
             $controller->setLocalMode(true);
