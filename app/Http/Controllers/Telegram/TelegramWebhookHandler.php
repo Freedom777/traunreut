@@ -239,8 +239,8 @@ class TelegramWebhookHandler extends WebhookHandler
         $events = $query->get();
 
         if ($events->isEmpty()) {
-            $cityName = $city == self::ALL_CITIES 
-                ? 'городах' 
+            $cityName = $city == self::ALL_CITIES
+                ? 'городах'
                 : ('городе ' . ($events->first()->city?->name ?? \App\Models\City::find($city)?->name ?? 'неизвестном'));
             $this->chat->message('События в ' . $cityName . ' не найдены.')
                 ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back'))
@@ -249,8 +249,8 @@ class TelegramWebhookHandler extends WebhookHandler
         }
 
         // Формируем сообщения с событиями
-        $cityName = $city == self::ALL_CITIES 
-            ? 'городах' 
+        $cityName = $city == self::ALL_CITIES
+            ? 'городах'
             : ('городе ' . ($events->first()->city?->name ?? \App\Models\City::find($city)?->name ?? 'неизвестном'));
         $result = $this->formatEventsMessages(
             $events,
@@ -437,13 +437,21 @@ class TelegramWebhookHandler extends WebhookHandler
     {
         Carbon::setLocale($languageCode);
 
-        // Получаем первое событие для источника
-        $firstEvent = $events->first();
-        $site = $firstEvent->site ?? null;
+        $sites = $events
+            ->pluck('site')
+            ->filter()
+            ->unique();
 
-        // Добавляем источник если есть
-        if ($site) {
-            $title .= PHP_EOL . 'Источник: <a href="http://' . $site . '">' . $site . '</a>';
+        if ($sites->isNotEmpty()) {
+            $links = $sites->map(fn ($site) =>
+                '<a href="http://' . $site . '">' . $site . '</a>'
+            )->implode(', ');
+
+            if ($sites->length() > 1) {
+                $title .= PHP_EOL . 'Источники: ' . $links;
+            } else {
+                $title .= PHP_EOL . 'Источник: ' . $links;
+            }
         }
 
         $currentMessage = '<b>' . $title . '</b>';
