@@ -3,9 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\NaturefreundeController;
-use App\Http\Controllers\ParseK1Controller;
+use App\Http\Controllers\K1Controller;
 use App\Http\Controllers\TraunreutController;
-use App\Http\Controllers\TraunsteinController;
 use App\Models\EventTitle;
 use Illuminate\Console\Command;
 
@@ -37,22 +36,14 @@ class ParseCommand extends Command
 
         switch ($siteName) {
             case 'traunreut':
-                $this->parseTraunreut();
-            break;
             case 'naturefreunde':
-                $this->parseNaturefreunde();
-            break;
             case 'k1':
-                $this->parseK1();
-            break;
-            case 'traunstein':
-                $this->parseTraunstein();
+                $this->startParse($siteName);
             break;
             case 'all':
-                $this->parseTraunreut();
-                $this->parseK1();
-                $this->parseTraunstein();
-                $this->parseNaturefreunde();
+                $this->startParse('traunreut');
+                $this->startParse('k1');
+                $this->startParse('naturefreunde');
             break;
             case 'vocabulary':
                 $this->getVocabulary();
@@ -65,85 +56,16 @@ class ParseCommand extends Command
         $this->info('Завершён парсинг, сайт ' . $siteName . '.');
     }
 
-    protected function parseNaturefreunde() {
-        $naturefreundeController = new NaturefreundeController();
+    private function startParse(string $controllerName) {
+        $cname = ucfirst($controllerName) . 'Controller';
+        $controller = new $cname();
         if ($this->option('local')) {
-            $naturefreundeController->setLocalMode(true);
+            $controller->setLocalMode(true);
         }
         if ($this->option('debug')) {
-            $naturefreundeController->setDebugMode(true);
+            $controller->setDebugMode(true);
         }
-        $naturefreundeController->run();
-    }
-
-    protected function parseK1() {
-        // Создаем экземпляр контроллера и вызываем метод
-        $k1Controller = new ParseK1Controller();
-        if ($this->option('local')) {
-            $k1Controller->setLocalMode(true);
-        }
-        if ($this->option('debug')) {
-            $k1Controller->setDebugMode(true);
-        }
-
-        /*$source = [
-            'url' => 'https://www.k1-traunreut.de/programm',
-            'region' => 'Bayern',
-            'site' => 'k1-traunreut.de',
-            'city' => 'Traunreut',
-            'event_types' => ['Konzerte', 'Theater', 'Kultur', 'Kinderveranstaltungen', 'Comedy', 'Musik'],
-            'parse' => [
-                'start_block_selector' => '#gefilterte-events', // div[id="gefilterte-events"]
-                'event_list_selector' => 'section',
-                'title_selector' => 'data-title',
-                'artist_selector' => 'data-artist',
-                'date_selector' => 'data-date',
-                'category_selector' => 'data-cat',
-            ],
-        ];*/
-        $k1Controller->run();
-    }
-
-    protected function parseTraunreut() {
-        $traunreutController = new TraunreutController();
-        if ($this->option('local')) {
-            $traunreutController->setLocalMode(true);
-        }
-        if ($this->option('debug')) {
-            $traunreutController->setDebugMode(true);
-        }
-        /*$nowDate = CarbonImmutable::now();
-        $monthLaterDate = $nowDate->addMonth();
-        $source = [
-            'url' => 'https://veranstaltungen.traunreut.de/traunreut/?form=search&searchType=search&dateFrom=' . $nowDate->format('Y-m-d') . '&dateTo=' . $monthLaterDate->format('Y-m-d') . '&timeFrom=0&latitude=47.955&longitude=12.5715&location=Traunreut&distance=50',
-            'region' => 'Bayern',
-            'site' => 'traunreut.de',
-            // 'city' => 'Traunreut',
-            // 'event_types' => ['Konzerte', 'Theater', 'Kultur', 'Kinderveranstaltungen', 'Comedy', 'Musik'],
-            'parse' => [
-                'event_list_selector' => 'article.-IMXEVNT-listElement',
-                'title_selector' => '.-IMXEVNT-seoTitle',
-                'category_selector' => '.-IMXEVNT-listElement__text__subline',
-                'info_selector' => '.-IMXEVNT-listElement__text__info',
-                'description_selector' => '.-IMXEVNT-listElement__text__extended p',
-
-
-                'content_block_selector' => 'div.-IMXEVENT-lazyLoadList__page',
-                'item_selector' => 'article.-IMXEVNT-listElement',
-            ],
-        ];*/
-        $traunreutController->run();
-    }
-
-    protected  function parseTraunstein() {
-        $traunsteinController = new TraunsteinController();
-        if ($this->option('local')) {
-            $traunsteinController->setLocalMode(true);
-        }
-        if ($this->option('debug')) {
-            $traunsteinController->setDebugMode(true);
-        }
-        $traunsteinController->run();
+        $controller->run();
     }
 
     protected function getVocabulary() {

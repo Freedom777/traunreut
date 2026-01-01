@@ -12,15 +12,11 @@ use Throwable;
 class TraunreutController extends BaseParserController
 {
     private string $baseUrl = 'https://veranstaltungen.traunreut.de';
-    private string $source = 'traunreut.de';
-    private string $region = 'Bayern';
 
     protected string $configPath = 'parse.traunreut';
 
     public function fetchEvents(): array
     {
-        $this->region = $this->parseConfig['region'];
-
         $token = $this->fetchToken();
         $linksAr = $this->fetchEventLinks($token);
 

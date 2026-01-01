@@ -2,15 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
-use App\Models\EventTitle;
 use App\Models\EventType;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\BrowserKit\HttpBrowser;
-use Symfony\Component\HttpClient\HttpClient;
-use Throwable;
 
 class NaturefreundeController extends BaseParserController
 {
@@ -32,9 +26,7 @@ class NaturefreundeController extends BaseParserController
     protected function parseEventNode(Crawler $node): ?array
     {
         try {
-            // ++$this->eventCount;
-            // $eventId = (int) Str::afterLast($link, '/');
-            // dd($node->html());
+            ++$this->eventCount;
             $sourceParse = $this->parseConfig['parse'];
             $dateSrc = $this->filterNodeText($node, $sourceParse['date_selector']);
             if (!$dateSrc) {
@@ -86,9 +78,6 @@ class NaturefreundeController extends BaseParserController
                     return $eventRec;
                 }
             }
-
-
-
         } catch (\Exception $e) {
             ++$this->errorCount;
             $this->log('Ошибка при обработке события: ' . $e->getMessage(), 'ERROR');
@@ -103,13 +92,9 @@ class NaturefreundeController extends BaseParserController
             'September' => 9, 'Oktober' => 10, 'November' => 11, 'Dezember' => 12
         ];
 
-        /*static $weekdays = [
-            'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag',
-            'Freitag', 'Samstag', 'Sonntag'
-        ];*/
-
         // Проверяем формат строки
         if (!preg_match('/^(\w+),\s*(\d+)\.\s*(\w+)$/', $dateString, $matches)) {
+            $this->log('Невозможно обработать строку даты: ' . $dateString);
             return null; // Формат не соответствует ожидаемому
         }
 
@@ -126,6 +111,7 @@ class NaturefreundeController extends BaseParserController
 
             return $date->format($format);
         } catch (\Exception $e) {
+            $this->log('Ошибка при создании даты: ' . $e->getMessage());
             return null;
         }
     }

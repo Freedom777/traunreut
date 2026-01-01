@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventTitle;
-use DateTime;
 use Exception;
 use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
 
-class ParseK1Controller extends BaseParserController
+class K1Controller extends BaseParserController
 {
+    protected string $configPath = 'parse.k1';
+
     public function fetchEvents(): array
     {
         $crawler = $this->client->request('GET', $this->parseConfig['url']);
@@ -99,7 +100,4 @@ class ParseK1Controller extends BaseParserController
             return null;
         }
     }
-
-
-
 }

@@ -2,7 +2,6 @@
 
 return [
     'url' => 'https://www.k1-traunreut.de/programm',
-    'region' => 'Bayern',
     'site' => 'k1-traunreut.de',
     'city' => 'Traunreut',
     'event_types' => ['Konzerte', 'Theater', 'Kultur', 'Kinderveranstaltungen', 'Comedy', 'Musik'],
