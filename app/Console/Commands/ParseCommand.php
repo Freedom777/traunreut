@@ -2,9 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\NaturefreundeController;
-use App\Http\Controllers\K1Controller;
-use App\Http\Controllers\TraunreutController;
 use App\Models\EventTitle;
 use Illuminate\Console\Command;
 
@@ -58,7 +55,8 @@ class ParseCommand extends Command
 
     private function startParse(string $controllerName) {
         $cname = ucfirst($controllerName) . 'Controller';
-        $controller = new $cname();
+        $class = '\\App\\Http\\Controllers\\' . $cname;
+        $controller = app($class);
         if ($this->option('local')) {
             $controller->setLocalMode(true);
         }
