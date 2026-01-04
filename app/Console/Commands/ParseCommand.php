@@ -33,14 +33,14 @@ class ParseCommand extends Command
 
         switch ($siteName) {
             case 'traunreut':
-            case 'naturefreunde':
+            case 'naturfreunde':
             case 'k1':
                 $this->startParse($siteName);
             break;
             case 'all':
                 $this->startParse('traunreut');
                 $this->startParse('k1');
-                $this->startParse('naturefreunde');
+                $this->startParse('naturfreunde');
             break;
             case 'vocabulary':
                 $this->getVocabulary();

@@ -489,7 +489,11 @@ class TelegramWebhookHandler extends WebhookHandler
                         $location = $event->location ?: ($event->city?->name ?? '');
                     }
 
-                    $line = $event->link
+                    $line = '';
+                    if ($event->site === 'naturfreunde-traunreut.de') {
+                        $line .= 'Naturfreunde: ';
+                    }
+                    $line .= $event->link
                         ? '<a href="' . $event->link . '">' . htmlspecialchars($titleRu) . '</a> (' . $location . ')'
                         : htmlspecialchars($titleRu) . ' (' . $location . ')';
 

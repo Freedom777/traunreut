@@ -6,9 +6,9 @@ use App\Models\EventType;
 use Carbon\Carbon;
 use Symfony\Component\DomCrawler\Crawler;
 
-class NaturefreundeController extends BaseParserController
+class NaturfreundeController extends BaseParserController
 {
-    protected string $configPath = 'parse.naturefreunde';
+    protected string $configPath = 'parse.naturfreunde';
 
     private string $category = 'Naturerlebnisse';
 
