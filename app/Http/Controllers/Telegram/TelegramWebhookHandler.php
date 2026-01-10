@@ -438,14 +438,112 @@ class TelegramWebhookHandler extends WebhookHandler
     {
         Carbon::setLocale($languageCode);
 
-        // Формируем заголовок с источниками
         $header = $this->buildMessageHeader($events, $title, $page);
+        $eventsByDate = $events->groupBy(fn($e) => Carbon::parse($e->start_date)->format('Y-m-d'));
 
-        // Формируем все строки событий
-        $allLines = $this->buildEventLines($events, $languageCode, $showCityInEvents);
+        return $this->buildPageDynamically($eventsByDate, $header, $page, $languageCode, $showCityInEvents);
+    }
 
-        // Формируем страницы динамически и возвращаем нужную
-        return $this->buildPageFromLines($allLines, $header, $page);
+    private function buildPageDynamically($eventsByDate, string $baseHeader, int $targetPage, string $languageCode, bool $showCityInEvents): array
+    {
+        $currentPageNum = 1;
+        $currentMessage = $baseHeader;
+        $lastDate = null;
+        $lastTime = null;
+        $foundTargetPage = false;
+
+        foreach ($eventsByDate as $dateKey => $dateEvents) {
+            $date = Carbon::parse($dateKey);
+            $dateHeader = '<b>' . $date->translatedFormat('d.m.Y (l)') . '</b>';
+
+            $eventsByTime = $dateEvents->groupBy(fn($e) => Carbon::parse($e->start_date)->format('H:i'));
+
+            foreach ($eventsByTime as $time => $timeEvents) {
+                $timeStr = $time === '00:00' ? 'Весь день' : $time;
+                $timeBlock = '<b>' . $timeStr . '</b>';
+
+                foreach ($timeEvents as $event) {
+                    $line = $this->formatSingleEvent($event, $showCityInEvents);
+
+                    // Формируем добавление
+                    $addition = $this->buildEventAddition($dateHeader, $timeBlock, $line, $lastDate, $lastTime);
+
+                    // Проверяем влезет ли
+                    $wouldFit = mb_strlen($currentMessage . $addition) <= self::MAX_MESSAGE_LENGTH;
+
+                    if (!$wouldFit) {
+                        // Не влезает
+                        if ($currentPageNum === $targetPage) {
+                            // Это наша страница и мы уже что-то добавили
+                            return [
+                                'message' => trim($currentMessage),
+                                'hasMore' => true
+                            ];
+                        }
+
+                        // Переходим на новую страницу
+                        $currentPageNum++;
+                        $currentMessage = $baseHeader;
+                        $lastDate = null;
+                        $lastTime = null;
+
+                        // Добавляем это событие на новую страницу
+                        $addition = $this->buildEventAddition($dateHeader, $timeBlock, $line, $lastDate, $lastTime);
+                        $currentMessage .= $addition;
+                    } else {
+                        // Влезает - добавляем
+                        $currentMessage .= $addition;
+
+                    }
+
+                    if ($currentPageNum === $targetPage) {
+                        $foundTargetPage = true;
+                    }
+
+                    // Если мы прошли целевую страницу - можем остановиться
+                    if ($currentPageNum > $targetPage) {
+                        return [
+                            'message' => trim($currentMessage),
+                            'hasMore' => false
+                        ];
+                    }
+                }
+            }
+        }
+
+        // Закончились все события
+        if ($currentPageNum === $targetPage || $foundTargetPage) {
+            return [
+                'message' => trim($currentMessage),
+                'hasMore' => false
+            ];
+        }
+
+        // Запрошенная страница не существует
+        return [
+            'message' => $baseHeader . PHP_EOL . PHP_EOL . 'Страница не найдена',
+            'hasMore' => false
+        ];
+    }
+
+    private function buildEventAddition(string $dateHeader, string $timeBlock, string $eventLine, ?string &$lastDate, ?string &$lastTime): string
+    {
+        $addition = '';
+
+        if ($lastDate !== $dateHeader) {
+            $addition .= PHP_EOL . PHP_EOL . $dateHeader;
+            $lastDate = $dateHeader;
+            $lastTime = null; // сбрасываем время при смене даты
+        }
+
+        if ($lastTime !== $timeBlock) {
+            $addition .= PHP_EOL . $timeBlock;
+            $lastTime = $timeBlock;
+        }
+
+        $addition .= PHP_EOL . ' ' . $eventLine;
+
+        return $addition;
     }
 
     private function buildMessageHeader($events, string $title, int $page): string
@@ -466,36 +564,6 @@ class TelegramWebhookHandler extends WebhookHandler
         }
 
         return $header;
-    }
-
-    private function buildEventLines($events, string $languageCode, bool $showCityInEvents): array
-    {
-        $allLines = [];
-        $eventsByDate = $events->groupBy(fn($e) => Carbon::parse($e->start_date)->format('Y-m-d'));
-
-        foreach ($eventsByDate as $dateKey => $dateEvents) {
-            $date = Carbon::parse($dateKey);
-            $dateHeader = '<b>' . $date->translatedFormat('d.m.Y (l)') . '</b>';
-
-            $eventsByTime = $dateEvents->groupBy(fn($e) => Carbon::parse($e->start_date)->format('H:i'));
-
-            foreach ($eventsByTime as $time => $timeEvents) {
-                $timeStr = $time === '00:00' ? 'Весь день' : $time;
-                $timeBlock = '<b>' . $timeStr . '</b>';
-
-                foreach ($timeEvents as $event) {
-                    $line = $this->formatSingleEvent($event, $showCityInEvents);
-
-                    $allLines[] = [
-                        'date' => $dateHeader,
-                        'time' => $timeBlock,
-                        'event' => $line
-                    ];
-                }
-            }
-        }
-
-        return $allLines;
     }
 
     private function formatSingleEvent($event, bool $showCityInEvents): string
@@ -523,85 +591,6 @@ class TelegramWebhookHandler extends WebhookHandler
             : htmlspecialchars($titleRu) . ' (' . $location . ')';
 
         return $line;
-    }
-
-    private function buildPageFromLines(array $allLines, string $baseHeader, int $targetPage): array
-    {
-        if (empty($allLines)) {
-            return [
-                'message' => $baseHeader,
-                'hasMore' => false
-            ];
-        }
-
-        $currentPageNum = 1;
-        $processedCount = 0;
-
-        // Формируем страницы последовательно до нужной
-        while ($processedCount < count($allLines) && $currentPageNum <= $targetPage) {
-            $currentMessage = $baseHeader;
-            $lastDate = null;
-            $lastTime = null;
-            $pageStartIndex = $processedCount;
-
-            // Добавляем события пока они влезают в лимит
-            for ($i = $processedCount; $i < count($allLines); $i++) {
-                $item = $allLines[$i];
-
-                // Формируем что нужно добавить
-                $addition = '';
-
-                if ($lastDate !== $item['date']) {
-                    $addition .= PHP_EOL . PHP_EOL . $item['date'];
-                    $lastDate = $item['date'];
-                    $lastTime = null; // сбрасываем время при смене даты
-                }
-
-                if ($lastTime !== $item['time']) {
-                    $addition .= PHP_EOL . $item['time'];
-                    $lastTime = $item['time'];
-                }
-
-                $addition .= PHP_EOL . ' ' . $item['event'];
-
-                // Проверяем влезет ли
-                if (mb_strlen($currentMessage . $addition) > self::MAX_MESSAGE_LENGTH) {
-                    // Не влезает - останавливаемся
-                    break;
-                }
-
-                // Влезает - добавляем
-                $currentMessage .= $addition;
-                $processedCount++;
-            }
-
-            // Если достигли нужной страницы - возвращаем результат
-            if ($currentPageNum === $targetPage) {
-                // Проверяем есть ли еще события
-                $hasMore = $processedCount < count($allLines);
-
-                return [
-                    'message' => trim($currentMessage),
-                    'hasMore' => $hasMore
-                ];
-            }
-
-            // Если на странице не добавилось ни одного события - что-то не так
-            if ($processedCount === $pageStartIndex) {
-                return [
-                    'message' => $baseHeader . PHP_EOL . PHP_EOL . 'Ошибка: событие слишком длинное',
-                    'hasMore' => false
-                ];
-            }
-
-            $currentPageNum++;
-        }
-
-        // Если дошли сюда - запрошенная страница не существует
-        return [
-            'message' => $baseHeader . PHP_EOL . PHP_EOL . 'Страница не найдена',
-            'hasMore' => false
-        ];
     }
 
     /**
