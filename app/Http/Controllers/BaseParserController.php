@@ -33,7 +33,11 @@ abstract class BaseParserController extends Controller
 
             $this->log('Общее количество событий для обработки: ' . $this->eventCount);
 
-            $this->saveEvents($events);
+            if ($this->debugMode) {
+                dd($events);
+            } else {
+                $this->saveEvents($events);
+            }
 
         } catch (\Exception $e) {
             $this->log('Критическая ошибка при парсинге ' . $this->parseConfig['url'] . ': ' . $e->getMessage(), 'ERROR');

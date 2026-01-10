@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Telegram;
 
+use App\Models\City;
 use App\Models\Event;
 use Carbon\Carbon;
 use DefStudio\Telegraph\Handlers\WebhookHandler;
@@ -241,7 +242,7 @@ class TelegramWebhookHandler extends WebhookHandler
         if ($events->isEmpty()) {
             $cityName = $city == self::ALL_CITIES
                 ? 'городах'
-                : ('городе ' . ($events->first()->city?->name ?? \App\Models\City::find($city)?->name ?? 'неизвестном'));
+                : ('городе ' . ($events->first()->city?->name ?? City::find($city)?->name ?? 'неизвестном'));
             $this->chat->message('События в ' . $cityName . ' не найдены.')
                 ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back'))
                 ->send();
@@ -251,7 +252,7 @@ class TelegramWebhookHandler extends WebhookHandler
         // Формируем сообщения с событиями
         $cityName = $city == self::ALL_CITIES
             ? 'городах'
-            : ('городе ' . ($events->first()->city?->name ?? \App\Models\City::find($city)?->name ?? 'неизвестном'));
+            : ('городе ' . ($events->first()->city?->name ?? City::find($city)?->name ?? 'неизвестном'));
         $result = $this->formatEventsMessages(
             $events,
             'События в ' . $cityName,
@@ -362,7 +363,7 @@ class TelegramWebhookHandler extends WebhookHandler
         // Формируем заголовок периода (БЕЗ даты, только описание периода)
         $cityTitle = $city;
         if ($city && $city !== self::ALL_CITIES) {
-            $cityTitle = $events->first()?->city?->name ?? \App\Models\City::find($city)?->name ?? $city;
+            $cityTitle = $events->first()?->city?->name ?? City::find($city)?->name ?? $city;
         }
 
         $titleDate = $this->formatPeriodTitle($startDate, $endDate, $cityTitle, $languageCode, false);
@@ -437,35 +438,43 @@ class TelegramWebhookHandler extends WebhookHandler
     {
         Carbon::setLocale($languageCode);
 
-        $sites = $events
-            ->pluck('site')
-            ->filter()
-            ->unique();
+        // Формируем заголовок с источниками
+        $header = $this->buildMessageHeader($events, $title, $page);
+
+        // Формируем все строки событий
+        $allLines = $this->buildEventLines($events, $languageCode, $showCityInEvents);
+
+        // Формируем страницы динамически и возвращаем нужную
+        return $this->buildPageFromLines($allLines, $header, $page);
+    }
+
+    private function buildMessageHeader($events, string $title, int $page): string
+    {
+        $sites = $events->pluck('site')->filter()->unique();
 
         if ($sites->isNotEmpty()) {
             $links = $sites->map(fn ($site) =>
-                '<a href="http://' . $site . '">' . $site . '</a>'
+                '<a href="http://' . htmlspecialchars($site) . '">' . htmlspecialchars($site) . '</a>'
             )->implode(', ');
 
-            if ($sites->count() > 1) {
-                $title .= PHP_EOL . 'Источники: ' . $links;
-            } else {
-                $title .= PHP_EOL . 'Источник: ' . $links;
-            }
+            $title .= PHP_EOL . ($sites->count() > 1 ? 'Источники: ' : 'Источник: ') . $links;
         }
 
-        $currentMessage = '<b>' . $title . '</b>';
+        $header = '<b>' . $title . '</b>';
         if ($page > 1) {
-            $currentMessage .= ' (стр. ' . $page . ')';
+            $header .= ' (стр. ' . $page . ')';
         }
 
+        return $header;
+    }
+
+    private function buildEventLines($events, string $languageCode, bool $showCityInEvents): array
+    {
+        $allLines = [];
         $eventsByDate = $events->groupBy(fn($e) => Carbon::parse($e->start_date)->format('Y-m-d'));
 
-        // Формируем все события построчно
-        $allLines = [];
         foreach ($eventsByDate as $dateKey => $dateEvents) {
             $date = Carbon::parse($dateKey);
-
             $dateHeader = '<b>' . $date->translatedFormat('d.m.Y (l)') . '</b>';
 
             $eventsByTime = $dateEvents->groupBy(fn($e) => Carbon::parse($e->start_date)->format('H:i'));
@@ -475,27 +484,7 @@ class TelegramWebhookHandler extends WebhookHandler
                 $timeBlock = '<b>' . $timeStr . '</b>';
 
                 foreach ($timeEvents as $event) {
-                    $titleRu = $event->eventTitle?->title_ru ?? $event->eventTitle?->title_de;
-
-                    // Формируем локацию с городом
-                    if ($showCityInEvents) {
-                        // Режим "по дате" - показываем город жирным
-                        $cityName = $event->city?->name ?? '';
-                        $location = $event->location
-                            ? $event->location . ', <b>' . $cityName . '</b>'
-                            : '<b>' . $cityName . '</b>';
-                    } else {
-                        // Режим "по городу" - город не показываем
-                        $location = $event->location ?: ($event->city?->name ?? '');
-                    }
-
-                    $line = '';
-                    if ($event->site === 'naturfreunde-traunreut.de') {
-                        $line .= 'Naturfreunde: ';
-                    }
-                    $line .= $event->link
-                        ? '<a href="' . $event->link . '">' . htmlspecialchars($titleRu) . '</a> (' . $location . ')'
-                        : htmlspecialchars($titleRu) . ' (' . $location . ')';
+                    $line = $this->formatSingleEvent($event, $showCityInEvents);
 
                     $allLines[] = [
                         'date' => $dateHeader,
@@ -506,49 +495,112 @@ class TelegramWebhookHandler extends WebhookHandler
             }
         }
 
-        // Пагинация
-        $eventsPerPage = 30;
-        $startIndex = ($page - 1) * $eventsPerPage;
-        $endIndex = $startIndex + $eventsPerPage;
+        return $allLines;
+    }
 
-        $paginated = array_slice($allLines, $startIndex, $eventsPerPage);
+    private function formatSingleEvent($event, bool $showCityInEvents): string
+    {
+        $titleRu = $event->eventTitle?->title_ru ?? $event->eventTitle?->title_de;
 
-        // Собираем сообщение
-        $lastDate = null;
-        $lastTime = null;
-
-        foreach ($paginated as $item) {
-            // Добавляем дату только если она изменилась
-            if ($lastDate !== $item['date']) {
-                if (mb_strlen($currentMessage . PHP_EOL . PHP_EOL . $item['date']) > self::MAX_MESSAGE_LENGTH) {
-                    break;
-                }
-                $currentMessage .= PHP_EOL . PHP_EOL . $item['date'];
-                $lastDate = $item['date'];
-                $lastTime = null;
-            }
-
-            // Добавляем время только если оно изменилось
-            if ($lastTime !== $item['time']) {
-                if (mb_strlen($currentMessage . PHP_EOL . $item['time']) > self::MAX_MESSAGE_LENGTH) {
-                    break;
-                }
-                $currentMessage .= PHP_EOL . $item['time'];
-                $lastTime = $item['time'];
-            }
-
-            // Добавляем событие с переносом строки
-            if (mb_strlen($currentMessage . PHP_EOL . ' ' . $item['event']) > self::MAX_MESSAGE_LENGTH) {
-                break;
-            }
-            $currentMessage .= PHP_EOL . ' ' . $item['event'];
+        // Формируем локацию
+        if ($showCityInEvents) {
+            $cityName = $event->city?->name ?? '';
+            $location = $event->location
+                ? htmlspecialchars($event->location) . ', <b>' . htmlspecialchars($cityName) . '</b>'
+                : '<b>' . htmlspecialchars($cityName) . '</b>';
+        } else {
+            $location = htmlspecialchars($event->location ?: ($event->city?->name ?? ''));
         }
 
-        $hasMore = $endIndex < count($allLines);
+        // Формируем строку события
+        $line = '';
+        if ($event->site === 'naturfreunde-traunreut.de') {
+            $line .= 'Naturfreunde: ';
+        }
 
+        $line .= $event->link
+            ? '<a href="' . htmlspecialchars($event->link) . '">' . htmlspecialchars($titleRu) . '</a> (' . $location . ')'
+            : htmlspecialchars($titleRu) . ' (' . $location . ')';
+
+        return $line;
+    }
+
+    private function buildPageFromLines(array $allLines, string $baseHeader, int $targetPage): array
+    {
+        if (empty($allLines)) {
+            return [
+                'message' => $baseHeader,
+                'hasMore' => false
+            ];
+        }
+
+        $currentPageNum = 1;
+        $processedCount = 0;
+
+        // Формируем страницы последовательно до нужной
+        while ($processedCount < count($allLines) && $currentPageNum <= $targetPage) {
+            $currentMessage = $baseHeader;
+            $lastDate = null;
+            $lastTime = null;
+            $pageStartIndex = $processedCount;
+
+            // Добавляем события пока они влезают в лимит
+            for ($i = $processedCount; $i < count($allLines); $i++) {
+                $item = $allLines[$i];
+
+                // Формируем что нужно добавить
+                $addition = '';
+
+                if ($lastDate !== $item['date']) {
+                    $addition .= PHP_EOL . PHP_EOL . $item['date'];
+                    $lastDate = $item['date'];
+                    $lastTime = null; // сбрасываем время при смене даты
+                }
+
+                if ($lastTime !== $item['time']) {
+                    $addition .= PHP_EOL . $item['time'];
+                    $lastTime = $item['time'];
+                }
+
+                $addition .= PHP_EOL . ' ' . $item['event'];
+
+                // Проверяем влезет ли
+                if (mb_strlen($currentMessage . $addition) > self::MAX_MESSAGE_LENGTH) {
+                    // Не влезает - останавливаемся
+                    break;
+                }
+
+                // Влезает - добавляем
+                $currentMessage .= $addition;
+                $processedCount++;
+            }
+
+            // Если достигли нужной страницы - возвращаем результат
+            if ($currentPageNum === $targetPage) {
+                // Проверяем есть ли еще события
+                $hasMore = $processedCount < count($allLines);
+
+                return [
+                    'message' => trim($currentMessage),
+                    'hasMore' => $hasMore
+                ];
+            }
+
+            // Если на странице не добавилось ни одного события - что-то не так
+            if ($processedCount === $pageStartIndex) {
+                return [
+                    'message' => $baseHeader . PHP_EOL . PHP_EOL . 'Ошибка: событие слишком длинное',
+                    'hasMore' => false
+                ];
+            }
+
+            $currentPageNum++;
+        }
+
+        // Если дошли сюда - запрошенная страница не существует
         return [
-            'message' => trim($currentMessage),
-            'hasMore' => $hasMore
+            'message' => $baseHeader . PHP_EOL . PHP_EOL . 'Страница не найдена',
+            'hasMore' => false
         ];
     }
 

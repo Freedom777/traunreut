@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<!-- saved from url=(0038)https://www.naturfreunde-traunreut.de/ -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" class="pointer skrollr skrollr-desktop">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style id="customRules"></style>
+
+
+    <script async="" src="./Home_files/sp-2.0.0-dm-0.1.min.js.Без названия"></script>
+    <script type="text/javascript">
+        window._currentDevice = 'desktop';
+        window.Parameters = window.Parameters || {
+            HomeUrl: 'http://www.naturfreunde-traunreut.de/',
+            AccountUUID: 'ec67f6f7a96244188e27982dd3aee63d',
+            SystemID: '1AND1_EU_PROD',
+            SiteAlias: 'a0f8452be095453aa9e8b886c124c303',
+            SiteType: atob('RFVEQU9ORQ=='),
+            PublicationDate: 'Thu Jan 08 12:09:31 UTC 2026',
+            ExternalUid: '57064452-878b-4f5a-b429-8227e2ecb9bd',
+            IsSiteMultilingual: false,
+            InitialPostAlias: '',
+            InitialPostPageUuid: '',
+            InitialDynamicItem: '',
+            DynamicPageInfo: {
+                isDynamicPage: false,
+                base64JsonRowData: 'null',
+            },
+            InitialPageAlias: 'home',
+            InitialPageUuid: 'e8375e729c5241718c2e6756bdb48936',
+            InitialPageId: '708466827',
+            InitialEncodedPageAlias: 'aG9tZQ==',
+            InitialHeaderUuid: '6dd3d657883d4e0aad63b8ce7e0be9c4',
+            CurrentPageUrl: '',
+            IsCurrentHomePage: true,
+            AllowAjax: false,
+            AfterAjaxCommand: null,
+            HomeLinkText: 'Back To Home',
+            UseGalleryModule: false,
+            CurrentThemeName: 'Layout Theme',
+            ThemeVersion: '500000',
+            DefaultPageAlias: '',
+            RemoveDID: true,
+            WidgetStyleID: null,
+            IsHeaderFixed: false,
+            IsHeaderSkinny: false,
+            IsBfs: true,
+            StorePageAlias: 'null',
+            StorePagesUrls: 'e30=',
+            IsNewStore: 'false',
+            StorePath: '',
+            StoreId: 'null',
+            StoreVersion: 0,
+            StoreBaseUrl: '',
+            StoreCleanUrl: true,
+            StoreDisableScrolling: true,
+            IsStoreSuspended: false,
+            HasCustomDomain: true,
+            SimpleSite: false,
+            showCookieNotification: true,
+            cookiesNotificationMarkup: ' <div>Diese Webseite verwendet Cookies, um Ihnen ein optimales Online-Erlebnis bieten zu k&ouml;nnen. Durch die Nutzung dieser Webseite erkl&auml;ren Sie sich mit der Verwendung von Cookies einverstanden. <a href=\"\/privacy\" target=\"_blank\">Mehr Infos<\/a> \n<\/div> \n',
+            translatedPageUrl: '',
+            isFastMigrationSite: false,
+            sidebarPosition: 'NA',
+            currentLanguage: 'de',
+            currentLocale: 'de',
+            NavItems: '{}',
+            errors: {
+                general: 'There was an error connecting to the page.<br/> Make sure you are not offline.',
+                password: 'Incorrect name/password combination',
+                tryAgain: 'Try again'
+            },
+            NavigationAreaParams: {
+                ShowBackToHomeOnInnerPages: true,
+                NavbarSize: 4,
+                NavbarLiveHomePage: 'http://www.naturfreunde-traunreut.de/',
+                BlockContainerSelector: '.dmBody',
+                NavbarSelector: '#dmNav:has(a)',
+                SubNavbarSelector: '#subnav_main'
+            },
+            hasCustomCode: false,
+            planID: '2001',
+            customTemplateId: 'null',
+            siteTemplateId: 'null',
+            productId: 'DM_DIRECT',
+            disableTracking: false,
+            pageType: 'FROM_SCRATCH',
+            isRuntimeServer: true,
+            isInEditor: false,
+            hasNativeStore: false,
+            defaultLang: 'de',
+            hamburgerMigration: null,
+            isFlexSite: false
+        };
+
+        window.Parameters.LayoutID = {};
+        window.Parameters.LayoutID[window._currentDevice] = 6;
+        window.Parameters.LayoutVariationID = {};
+        window.Parameters.LayoutVariationID[window._currentDevice] = 5;
+    </script>
+
+
+    <!-- Injecting site-wide to the head -->
+
+
+    <!-- End Injecting site-wide to the head -->
+
+    <!-- Inject secured cdn script -->
+
+
+    <!-- ========= Meta Tags ========= -->
+    <!-- PWA settings -->
+    <script>
+        function toHash(str) {
+            var hash = 5381, i = str.length;
+            while (i) {
+                hash = hash * 33 ^ str.charCodeAt(--i)
+            }
+            return hash >>> 0
+        }
+    </script>
+    <script>
+        (function (global) {
+            //const cacheKey = global.cacheKey;
+            const isOffline = 'onLine' in navigator && navigator.onLine === false;
+            const hasServiceWorkerSupport = 'serviceWorker' in navigator;
+            if (isOffline) {
+                console.log('offline mode');
+            }
+            if (!hasServiceWorkerSupport) {
+                console.log('service worker is not supported');
+            }
+            if (hasServiceWorkerSupport && !isOffline) {
+                window.addEventListener('load', function () {
+                    const serviceWorkerPath = '/runtime-service-worker.js?v=3';
+                    navigator.serviceWorker
+                        .register(serviceWorkerPath, {scope: './'})
+                        .then(
+                            function (registration) {
+                                // Registration was successful
+                                console.log(
+                                    'ServiceWorker registration successful with scope: ',
+                                    registration.scope
+                                );
+                            },
+                            function (err) {
+                                // registration failed :(
+                                console.log('ServiceWorker registration failed: ', err);
+                            }
+                        )
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                });
+
+                // helper function to refresh the page
+                var refreshPage = (function () {
+                    var refreshing;
+                    return function () {
+                        if (refreshing) return;
+                        // prevent multiple refreshes
+                        var refreshkey = 'refreshed' + location.href;
+                        var prevRefresh = localStorage.getItem(refreshkey);
+                        if (prevRefresh) {
+                            localStorage.removeItem(refreshkey);
+                            if (Date.now() - prevRefresh < 30000) {
+                                return; // dont go into a refresh loop
+                            }
+                        }
+                        refreshing = true;
+                        localStorage.setItem(refreshkey, Date.now());
+                        console.log('refereshing page');
+                        window.location.reload();
+                    };
+                })();
+
+                function messageServiceWorker(data) {
+                    return new Promise(function (resolve, reject) {
+                        if (navigator.serviceWorker.controller) {
+                            var worker = navigator.serviceWorker.controller;
+                            var messageChannel = new MessageChannel();
+                            messageChannel.port1.onmessage = replyHandler;
+                            worker.postMessage(data, [messageChannel.port2]);
+
+                            function replyHandler(event) {
+                                resolve(event.data);
+                            }
+                        } else {
+                            resolve();
+                        }
+                    });
+                }
+            }
+        })(window);
+    </script>
+    <!-- Add manifest -->
+    <!-- End PWA settings -->
+
+
+    <link rel="canonical" href="https://www.naturfreunde-traunreut.de/">
+
+    <meta id="view" name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Home</title>
+
+    <!--Add favorites icons-->
+
+    <link rel="apple-touch-icon"
+          href="https://cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/dms3rep/multi/57px-Naturfreunde.jpg?Expires=1770466193&amp;Signature=b0EbGEZvuZcv8GTmUlyDD8lqWjwPSEIDmk9rsBlaQ8Tgwo2GJ3hlzrkPuyNXUS~POwm2yu092NoTKoZgZw-3UdQ6zAOeeMxtCL-g7cgd5HQ2uz2bEfQCENnMpPNzMnWggEs1HAhwIEKSNO6Wc9ttqCP3Ckc0bS52Vp26quE0MIhEVpYXITx7~3WyIiFmOs1NlGa2dQjZ9GoA1zigH4VbmXQ35z8aSfREecdnVtF7MMsjpGaguQYRz4Ux-09ir5B31jSB7fjMfpgck4HTCmGlbfPu19YqfghrGYMVkZufF7CjfuWY5ezf1E36TGIYFQoqMKur5koSA1c~Wkj39FrQlQ__&amp;Key-Pair-Id=K2NXBXLF010TJW">
+
+    <link rel="icon" type="image/x-icon"
+          href="https://cdn.website-editor.net/a0f8452be095453aa9e8b886c124c303/site_favicon_16_1606316358372.ico">
+
+    <!-- End favorite icons -->
+    <link rel="preconnect" href="https://le-cdn.website-editor.net/">
+
+
+    <!-- render the required CSS and JS in the head section -->
+    <script id="d-js-dmapi">
+        window.SystemID = '1AND1_EU_PROD';
+
+        if (!window.dmAPI) {
+            window.dmAPI = {
+                registerExternalRuntimeComponent: function () {
+                },
+                getCurrentDeviceType: function () {
+                    return window._currentDevice;
+                },
+                runOnReady: (ns, fn) => {
+                    const safeFn = dmAPI.toSafeFn(fn);
+                    ns = ns || 'global_' + Math.random().toString(36).slice(2, 11);
+                    const eventName = 'afterAjax.' + ns;
+
+                    if (document.readyState === 'complete') {
+                        $.DM.events.off(eventName).on(eventName, safeFn);
+                        setTimeout(function () {
+                            safeFn({
+                                isAjax: false,
+                            });
+                        }, 0);
+                    } else {
+                        window?.waitForDeferred?.('dmAjax', () => {
+                            $.DM.events.off(eventName).on(eventName, safeFn);
+                            safeFn({
+                                isAjax: false,
+                            });
+                        });
+                    }
+                },
+                toSafeFn: (fn) => {
+                    if (fn?.safe) {
+                        return fn;
+                    }
+                    const safeFn = function (...args) {
+                        try {
+                            return fn?.apply(null, args);
+                        } catch (e) {
+                            console.log('function failed ' + e.message);
+                        }
+                    };
+                    safeFn.safe = true;
+                    return safeFn;
+                }
+            };
+        }
+
+        if (!window.requestIdleCallback) {
+            window.requestIdleCallback = function (fn) {
+                setTimeout(fn, 0);
+            }
+        }
+    </script>
+
+    <!-- loadCSS function header.jsp-->
+
+
+    <script id="d-js-load-css">
+        /**
+         * There are a few <link> tags with CSS resource in them that are preloaded in the page
+         * in each of those there is a "onload" handler which invokes the loadCSS callback
+         * defined here.
+         * We are monitoring 3 main CSS files - the runtime, the global and the page.
+         * When each load we check to see if we can append them all in a batch. If threre
+         * is no page css (which may happen on inner pages) then we do not wait for it
+         */
+        (function () {
+            let cssLinks = {};
+
+            function loadCssLink(link) {
+                link.onload = null;
+                link.rel = "stylesheet";
+                link.type = "text/css";
+            }
+
+            function checkCss() {
+                const pageCssLink = document.querySelector("[id*='CssLink']");
+                const widgetCssLink = document.querySelector("[id*='widgetCSS']");
+
+                if (cssLinks && cssLinks.runtime && cssLinks.global && (!pageCssLink || cssLinks.page) && (!widgetCssLink || cssLinks.widget)) {
+                    const storedRuntimeCssLink = cssLinks.runtime;
+                    const storedPageCssLink = cssLinks.page;
+                    const storedGlobalCssLink = cssLinks.global;
+                    const storedWidgetCssLink = cssLinks.widget;
+
+                    storedGlobalCssLink.disabled = true;
+                    loadCssLink(storedGlobalCssLink);
+
+                    if (storedPageCssLink) {
+                        storedPageCssLink.disabled = true;
+                        loadCssLink(storedPageCssLink);
+                    }
+
+                    if (storedWidgetCssLink) {
+                        storedWidgetCssLink.disabled = true;
+                        loadCssLink(storedWidgetCssLink);
+                    }
+
+                    storedRuntimeCssLink.disabled = true;
+                    loadCssLink(storedRuntimeCssLink);
+
+                    requestAnimationFrame(() => {
+                        setTimeout(() => {
+                            storedRuntimeCssLink.disabled = false;
+                            storedGlobalCssLink.disabled = false;
+                            if (storedPageCssLink) {
+                                storedPageCssLink.disabled = false;
+                            }
+                            if (storedWidgetCssLink) {
+                                storedWidgetCssLink.disabled = false;
+                            }
+                            // (SUP-4179) Clear the accumulated cssLinks only when we're
+                            // sure that the document has finished loading and the document
+                            // has been parsed.
+                            if (document.readyState === 'interactive') {
+                                cssLinks = null;
+                            }
+                        }, 0);
+                    });
+                }
+            }
+
+
+            function loadCSS(link) {
+                try {
+                    var urlParams = new URLSearchParams(window.location.search);
+                    var noCSS = !!urlParams.get("nocss");
+                    var cssTimeout = urlParams.get("cssTimeout") || 0;
+
+                    if (noCSS) {
+                        return;
+                    }
+                    if (link.href && link.href.includes("d-css-runtime")) {
+                        cssLinks.runtime = link;
+                        checkCss();
+                    } else if (link.id === "siteGlobalCss") {
+                        cssLinks.global = link;
+                        checkCss();
+                    } else if (link.id && link.id.includes("CssLink")) {
+                        cssLinks.page = link;
+                        checkCss();
+                    } else if (link.id && link.id.includes("widgetCSS")) {
+                        cssLinks.widget = link;
+                        checkCss();
+                    } else {
+                        requestIdleCallback(function () {
+                            window.setTimeout(function () {
+                                loadCssLink(link);
+                            }, parseInt(cssTimeout, 10));
+                        });
+                    }
+                } catch (e) {
+                    throw e
+                }
+            }
+
+            window.loadCSS = window.loadCSS || loadCSS;
+        })();
+    </script>
+
+
+    <script data-role="deferred-init" type="text/javascript">
+        /* usage: window.getDeferred(<deferred name>).resolve() or window.getDeferred(<deferred name>).promise.then(...)*/
+        function Def() {
+            this.promise = new Promise((function (a, b) {
+                this.resolve = a, this.reject = b
+            }).bind(this))
+        }
+
+        const defs = {};
+        window.getDeferred = function (a) {
+            return null == defs[a] && (defs[a] = new Def), defs[a]
+        }
+        window.waitForDeferred = function (b, a, c) {
+            let d = window?.getDeferred?.(b);
+            d
+                ? d.promise.then(a)
+                : c && ["complete", "interactive"].includes(document.readyState)
+                    ? setTimeout(a, 1)
+                    : c
+                        ? document.addEventListener("DOMContentLoaded", a)
+                        : console.error(`Deferred  does not exist`);
+        };
+    </script>
+    <style id="forceCssIncludes">
+        /* This file is auto-generated from a `scss` file with the same name */
+
+        .videobgwrapper {
+            overflow: hidden;
+            position: absolute;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            border-radius: inherit
+        }
+
+        .videobgframe {
+            position: absolute;
+            width: 101%;
+            height: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translateY(-50%) translateX(-50%);
+            object-fit: fill
+        }
+
+        #dm video.videobgframe {
+            margin: 0
+        }
+
+        @media (max-width: 767px) {
+            .dmRoot .dmPhotoGallery.newPhotoGallery:not(.photo-gallery-done) {
+                min-height: 80vh
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .dmRoot .dmPhotoGallery.newPhotoGallery:not(.photo-gallery-done) {
+                min-height: 45vh
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .responsiveTablet .dmPhotoGallery.newPhotoGallery:not(.photo-gallery-done) {
+                min-height: 45vh
+            }
+        }
+
+        #dm [data-show-on-page-only] {
+            display: none !important
+        }
+
+        #dmRoot div.stickyHeaderFix div.site_content {
+            margin-top: 0 !important
+        }
+
+        #dmRoot div.stickyHeaderFix div.hamburger-header-container {
+            position: relative
+        }
+
+
+    </style>
+    <style id="cssVariables" type="text/css">
+
+    </style>
+
+
+    <!-- Google Fonts Include -->
+
+
+    <!-- loadCSS function fonts.jsp-->
+
+
+    <link type="text/css" rel="stylesheet" href="./Home_files/css2">
+
+
+    <!-- RT CSS Include d-css-runtime-desktop-one-package-structured-global-->
+    <link rel="stylesheet" type="text/css"
+          href="./Home_files/d-css-runtime-desktop-one-package-structured-global.min.css">
+
+    <!-- End of RT CSS Include -->
+
+    <link type="text/css" rel="stylesheet" href="./Home_files/030752295a9f55a9c85b9a8279ff2458.css" id="widgetCSS">
+
+    <!-- Support `img` size attributes -->
+    <style>img[width][height] {
+        height: auto;
+    }</style>
+
+    <!-- Support showing sticky element on page only -->
+    <style>
+        body[data-page-alias="home"] #dm [data-show-on-page-only="home"] {
+            display: block !important;
+        }
+    </style>
+
+    <!-- This is populated in Ajax navigation -->
+    <style id="pageAdditionalWidgetsCss" type="text/css">
+    </style>
+
+
+    <!-- Site CSS -->
+    <link type="text/css" rel="stylesheet" href="./Home_files/a0f8452be095453aa9e8b886c124c303_withFlex_1.min.css"
+          id="siteGlobalCss">
+
+
+    <!-- additional css file per platform -->
+    <link type="text/css" rel="stylesheet" href="./Home_files/1and1-runtime.css">
+
+
+    <style id="customWidgetStyle" type="text/css">
+
+    </style>
+    <style id="innerPagesStyle" type="text/css">
+
+    </style>
+
+
+    <style id="additionalGlobalCss" type="text/css">
+    </style>
+
+    <!-- Page CSS -->
+    <link type="text/css" rel="stylesheet" href="./Home_files/a0f8452be095453aa9e8b886c124c303_home_withFlex_1.min.css"
+          id="homeCssLink">
+
+    <style id="pagestyle" type="text/css">
+
+    </style>
+
+    <style id="pagestyleDevice" type="text/css">
+
+    </style>
+
+    <!-- Flex Sections CSS -->
+
+
+    <style id="globalFontSizeStyle" type="text/css">
+        .font-size-20, .size-20, .size-20 > font {
+            font-size: 20px !important;
+        }
+
+        .font-size-24, .size-24, .size-24 > font {
+            font-size: 24px !important;
+        }
+
+        .font-size-18, .size-18, .size-18 > font {
+            font-size: 18px !important;
+        }
+
+        .font-size-14, .size-14, .size-14 > font {
+            font-size: 14px !important;
+        }
+
+        .font-size-30, .size-30, .size-30 > font {
+            font-size: 30px !important;
+        }
+    </style>
+    <style id="pageFontSizeStyle" type="text/css">
+    </style>
+
+
+    <style id="hideAnimFix">
+        .dmDesktopBody:not(.editGrid) [data-anim-desktop]:not([data-anim-desktop='none']), .dmDesktopBody:not(.editGrid) [data-anim-extended] {
+            visibility: hidden;
+        }
+
+        .dmDesktopBody:not(.editGrid) .dmNewParagraph[data-anim-desktop]:not([data-anim-desktop='none']), .dmDesktopBody:not(.editGrid) .dmNewParagraph[data-anim-extended] {
+            visibility: hidden !important;
+        }
+
+
+        #dmRoot:not(.editGrid) .flex-element [data-anim-extended] {
+            visibility: hidden;
+        }
+
+    </style>
+
+
+    <style id="fontFallbacks">
+        @font-face {
+            font-family: "Open Sans Fallback";
+            src: local('Arial');
+            ascent-override: 101.1768%;
+            descent-override: 27.7323%;
+            size-adjust: 105.6416%;
+            line-gap-override: 0%;
+        }
+    </style>
+
+
+    <!-- End render the required css and JS in the head section -->
+
+
+    <link type="application/rss+xml" rel="alternate" href="https://www.naturfreunde-traunreut.de/feed/rss2">
+    <link type="application/atom+xml" rel="alternate" href="https://www.naturfreunde-traunreut.de/feed/atom">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.naturfreunde-traunreut.de/">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image"
+          content="https://le-cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/dms3rep/multi/opt/260px-Naturfreunde-1920w.png?Expires=1770466193&amp;Signature=gymuI3behGSk-SPTMhGe6BcewZBdwkYF27owN0ZspNDaFe5nElfYMzTS6NmTbCS5SLIgerVGNVijXAqK4I4OnNL6BjnKj~p3q9p1Vt9aldH75P~3MNFrsp2BD86OucXkk4-CqUCvsYUv2gtVKlJLBWfN3m1Hj-IpSI5mOXD8spphs88kT7fkUnSMguWbvXsqGhU-oVQLmiilyIxYNFw9wuVdNodEWlwgoQ5S2SMVuevyL6q71j9RB2a-Vzm~c2dG5fzsPD43M6aM4NBqNehfNpMowiNqW727GcT4ERzG4JXZphhObXX6Sj3a1erbpJte-maWMAySJL9-AOUrlVuIEQ__&amp;Key-Pair-Id=K2NXBXLF010TJW">
+    <meta property="og:image"
+          content="https://le-cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/dms3rep/multi/opt/260px-Naturfreunde-1920w.png?Expires=1770466193&amp;Signature=gymuI3behGSk-SPTMhGe6BcewZBdwkYF27owN0ZspNDaFe5nElfYMzTS6NmTbCS5SLIgerVGNVijXAqK4I4OnNL6BjnKj~p3q9p1Vt9aldH75P~3MNFrsp2BD86OucXkk4-CqUCvsYUv2gtVKlJLBWfN3m1Hj-IpSI5mOXD8spphs88kT7fkUnSMguWbvXsqGhU-oVQLmiilyIxYNFw9wuVdNodEWlwgoQ5S2SMVuevyL6q71j9RB2a-Vzm~c2dG5fzsPD43M6aM4NBqNehfNpMowiNqW727GcT4ERzG4JXZphhObXX6Sj3a1erbpJte-maWMAySJL9-AOUrlVuIEQ__&amp;Key-Pair-Id=K2NXBXLF010TJW">
+
+
+    <!-- SYS- MUFORDFfRVVfUFJPRA== -->
+    <script src="./Home_files/snippet.js.Без названия"></script>
+    <script src="./Home_files/skrollr.min.js.Без названия"></script>
+    <link type="text/css" rel="stylesheet" charset="UTF-8" href="./Home_files/m=el_main_css">
+    <script src="./Home_files/22728.js.Без названия" type="text/javascript"></script>
+</head>
+
+
+<body id="dmRoot" data-page-alias="home"
+      class="dmRoot dmDesktopBody fix-mobile-scrolling addCanvasBorder dmResellerSite dmLargeBody  pcCustomScrollbar d1SiteBody dmBodyNoIscroll"
+      style="padding:0;margin:0;">
+
+
+<!-- ========= Site Content ========= -->
+<div id="dm" class="dmwr">
+
+    <div class="dm_wrapper standard-var5 widgetStyle-3 standard">
+        <div dmwrapped="true" id="1901957768" class="dm-home-page" themewaschanged="true">
+            <div dmtemplateid="StandardLayoutMultiD"
+                 class="standardHeaderLayout dm-bfs dm-layout-home hasAnimations dmPageBody d-page-1716942098 inputs-css-clean dmFreeHeader runtime-module-container"
+                 id="dm-outer-wrapper" data-page-class="1716942098" data-soch="true"
+                 data-background-parallax-selector=".dmHomeSection1, .dmSectionParallex">
+                <div id="dmStyle_outerContainer" class="dmOuter">
+                    <div id="dmStyle_innerContainer" class="dmInner">
+                        <div class="dmLayoutWrapper standard-var dmStandardDesktop">
+                            <div>
+                                <div id="iscrollBody">
+                                    <div id="site_content">
+                                        <div class="dmHeaderContainer fHeader d-header-wrapper">
+                                            <div id="hcontainer" class="dmHeader p_hfcontainer u_hcontainer"
+                                                 freeheader="true">
+                                                <div dm:templateorder="85" class="dmHeaderResp dmHeaderStack noSwitch"
+                                                     id="1709005236">
+                                                    <div class="u_1982807421 dmRespRow" id="1982807421">
+                                                        <div class="dmRespColsWrapper" id="1432487789">
+                                                            <div class="dmRespCol small-12 medium-4 large-4"
+                                                                 id="1729861520">
+                                                                <div class="u_1518416668 dmNewParagraph"
+                                                                     data-element-type="paragraph" data-version="5"
+                                                                     id="1518416668"
+                                                                     style="text-align: left; display: block; transition: none 0s ease 0s;">
+                                                                    <p class="m-size-16 size-20"><span
+                                                                        class="font-size-20 m-font-size-16"
+                                                                        style="display: unset; font-weight: 700; color: rgb(255, 255, 255);">Natur</span><span
+                                                                        class="font-size-20 m-font-size-16"
+                                                                        style="display: unset; font-weight: 700; color: rgb(244, 6, 6);">F</span><span
+                                                                        class="font-size-20 m-font-size-16"
+                                                                        style="display: unset; font-weight: 700; color: rgb(255, 255, 255);">reunde Deutschlands Ortsgruppe Traunreut e.V.</span>
+                                                                    </p></div>
+                                                            </div>
+                                                            <div
+                                                                class="dmRespCol small-12 u_1158573975 medium-4 large-4"
+                                                                id="1158573975">
+                                                                <div class="imageWidget align-center u_1863622772"
+                                                                     data-element-type="image" data-widget-type="image"
+                                                                     id="1863622772" editablewidget="true"><a
+                                                                    id="1519326977" file="true" target="_blank" class=""
+                                                                    href="https://cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/files/uploaded/Schild-708d810d.jpg?Expires=1770466193&amp;Signature=HEyhg46OF09T1p8kv285QOLA3e6wn~nfN71ljb~VQe9UUg6M-aggWwU4oxz6Y90zcPbQ70pgqwYe4pTVivYZpLgmWnCSO2niA5Bw5CeY5il0NW6MKccEEsxnokea-ylhf1ewQgj6sP41aHEIkpsoKtpTBsw4PcVmF6Eifag5PaKWCfO9MLNvzktO7vAy0g664xEqfRqh4NHrX2sekfMWAFLOmC-dzmr2DPJGW8skBuo46PFrCb~sTHvnYFFAXu3E~nSp993XJyqtEjAFq74mPjOl~8jLYzgsroWbefJoyhJNdDO50kBPY4ji5EuTAsa5-neDNm~7Sh-1bni3NNsslA__&amp;Key-Pair-Id=K2NXBXLF010TJW"><img
+                                                                    src="./Home_files/Schild-1920w.jpg" alt=""
+                                                                    id="1671117377" class=""
+                                                                    data-dm-image-path="https://cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/dms3rep/multi/Schild.jpg"
+                                                                    width="1920" height="1335"
+                                                                    onerror="handleImageLoadError(this)"></a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="dmRespCol small-12 medium-4 large-4"
+                                                                 id="1703556403">
+                                                                <div class="u_1145400067 imageWidget align-center"
+                                                                     data-element-type="image" data-widget-type="image"
+                                                                     id="1145400067" editablewidget="true"><a
+                                                                    id="1811772973" class="" file="false"><img
+                                                                    src="./Home_files/260px-Naturfreunde-1920w.png"
+                                                                    alt="" id="1483559194" class=""
+                                                                    data-dm-image-path="https://cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/dms3rep/multi/260px-Naturfreunde.png"
+                                                                    width="250" height="265"
+                                                                    onerror="handleImageLoadError(this)"></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="u_1571063569 dmRespRow dmHeaderContent freeHeaderRow1"
+                                                         id="1571063569">
+                                                        <div class="dmRespColsWrapper clearfix" id="1618005341">
+                                                            <div
+                                                                class="u_1780181932 dmRespCol small-12 medium-12 large-12"
+                                                                id="1780181932"><span id="1520082955"></span>
+                                                                <nav
+                                                                    class="u_1284501632 effect-bottom2 main-navigation unifiednav dmLinksMenu"
+                                                                    role="navigation"
+                                                                    layout-main="horizontal_nav_layout_1"
+                                                                    layout-sub="submenu_horizontal_1"
+                                                                    data-show-vertical-sub-items="HOVER"
+                                                                    data-divider="DOT" id="1284501632"
+                                                                    dmle_extension="onelinksmenu"
+                                                                    data-element-type="onelinksmenu" navigation_id=""
+                                                                    data-logo-src="https://le-cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/dms3rep/multi/opt/2000px-Naturfreunde.svg-1920w.png"
+                                                                    data-nav-structure="HORIZONTAL" wr="false"
+                                                                    icon="true" surround="false"
+                                                                    navigation-id="unifiedNav">
+                                                                    <ul role="menubar" class="unifiednav__container  "
+                                                                        data-auto="navigation-pages">
+                                                                        <li role="menuitem"
+                                                                            class="unifiednav__item-wrap"
+                                                                            data-auto="more-pages" data-depth="0"><a
+                                                                            href="https://www.naturfreunde-traunreut.de/"
+                                                                            class="unifiednav__item   dmUDNavigationItem_00 currentPage dmNavItemSelected"
+                                                                            target="" data-target-page-alias=""
+                                                                            aria-current="page"
+                                                                            data-auto="selected-page"
+                                                                            tabindex="0"> <span class="nav-item-text "
+                                                                                                data-link-text="
+         Home
+        " data-auto="page-text-style">Home<span class="icon icon-angle-down"></span>
+</span>
+                                                                        </a>
+                                                                        </li>
+                                                                        <li role="menuitem"
+                                                                            class="unifiednav__item-wrap"
+                                                                            data-auto="more-pages" data-depth="0"><a
+                                                                            href="https://www.naturfreunde-traunreut.de/wer-macht-was"
+                                                                            class="unifiednav__item  dmUDNavigationItem_010101870980"
+                                                                            target="" data-target-page-alias=""
+                                                                            tabindex="0"> <span class="nav-item-text "
+                                                                                                data-link-text="
+         Wer macht was?
+        " data-auto="page-text-style">Wer macht was?<span class="icon icon-angle-down"></span>
+</span>
+                                                                        </a>
+                                                                        </li>
+                                                                        <li role="menuitem"
+                                                                            class="unifiednav__item-wrap"
+                                                                            data-auto="more-pages" data-depth="0"><a
+                                                                            href="https://www.naturfreunde-traunreut.de/empty-page"
+                                                                            class="unifiednav__item  dmUDNavigationItem_010101273013"
+                                                                            target="" data-target-page-alias=""
+                                                                            tabindex="0"> <span class="nav-item-text "
+                                                                                                data-link-text="
+         Vereinsjubiläum
+        " data-auto="page-text-style">Vereinsjubiläum<span class="icon icon-angle-down"></span>
+</span>
+                                                                        </a>
+                                                                        </li>
+                                                                        <li role="menuitem"
+                                                                            class="unifiednav__item-wrap"
+                                                                            data-auto="more-pages" data-depth="0"><a
+                                                                            href="https://www.naturfreunde-traunreut.de/vereinsleben"
+                                                                            class="unifiednav__item  dmUDNavigationItem_010101199752"
+                                                                            target="" data-target-page-alias=""
+                                                                            tabindex="0"> <span class="nav-item-text "
+                                                                                                data-link-text="
+         Vereinsleben
+        " data-auto="page-text-style">Vereinsleben<span class="icon icon-angle-down"></span>
+</span>
+                                                                        </a>
+                                                                        </li>
+                                                                        <li role="menuitem"
+                                                                            class="unifiednav__item-wrap"
+                                                                            data-auto="more-pages" data-depth="0"><a
+                                                                            href="https://www.naturfreunde-traunreut.de/newpage79f99045"
+                                                                            class="unifiednav__item  dmUDNavigationItem_010101938213"
+                                                                            target="" data-target-page-alias=""
+                                                                            tabindex="0"> <span class="nav-item-text "
+                                                                                                data-link-text="
+         Vereinshütte
+        " data-auto="page-text-style">Vereinshütte<span class="icon icon-angle-down"></span>
+</span>
+                                                                        </a>
+                                                                        </li>
+                                                                        <li role="menuitem"
+                                                                            class="unifiednav__item-wrap"
+                                                                            data-auto="more-pages" data-depth="0"><a
+                                                                            href="https://www.naturfreunde-traunreut.de/vereinschronik"
+                                                                            class="unifiednav__item  dmUDNavigationItem_010101649927"
+                                                                            target="" data-target-page-alias=""
+                                                                            tabindex="0"> <span class="nav-item-text "
+                                                                                                data-link-text="
+         Vereinschronik
+        " data-auto="page-text-style">Vereinschronik<span class="icon icon-angle-down"></span>
+</span>
+                                                                        </a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </nav>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="dmRespRow dmRespRowStable dmRespRowNoPadding dmPageTitleRow ">
+                                            <div class="dmRespColsWrapper">
+                                                <div class="large-12 dmRespCol">
+                                                    <div id="innerBar" class="innerBar lineInnerBar dmDisplay_None">
+                                                        <div class="titleLine display_None">
+                                                            <hr>
+                                                        </div>
+                                                        <!-- Page title is hidden in css for new responsive sites. It is left here only so we don't break old sites. Don't copy it to new layouts -->
+                                                        <div id="pageTitleText"></div>
+                                                        <div class="titleLine display_None">
+                                                            <hr>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div dmwrapped="true" id="dmFirstContainer"
+                                             class="dmBody u_dmStyle_template_home dm-home-page" themewaschanged="true">
+                                            <div id="allWrapper" class="allWrapper"><!-- navigation placeholders -->
+                                                <div id="dm_content" class="dmContent" role="main">
+                                                    <div dm:templateorder="170"
+                                                         class="dmHomeRespTmpl mainBorder dmRespRowsWrapper dmFullRowRespTmpl dmRespRowsWrapperSize1"
+                                                         id="1716942098">
+                                                        <div
+                                                            class="u_1556338500 dmRespRow dmDividerRow dmSectionNoParallax fullBleedChanged fullBleedMode"
+                                                            id="1556338500">
+                                                            <div class="dmRespColsWrapper" id="1292129104">
+                                                                <div
+                                                                    class="small-12 dmRespCol medium-12 large-12 u_1710565441"
+                                                                    id="1710565441"><span id="1360883222"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="dmRespRow u_1913501800" id="1913501800">
+                                                            <div class="dmRespColsWrapper" id="1556123276">
+                                                                <div class="dmRespCol small-12 medium-6 large-6"
+                                                                     id="1923630302">
+                                                                    <div class="dmNewParagraph u_1174295861"
+                                                                         data-element-type="paragraph" data-version="5"
+                                                                         id="1174295861" data-styletopreserve="{"
+                                                                         background-image
+                                                                    ":""}"=""><p
+                                                                    class="m-size-19 text-align-left size-24"><span
+                                                                    style="display: initial;"><br> </span>
+                                                                    <strong class="font-size-18 m-font-size-14"
+                                                                            style="display: initial; color: rgb(244, 6, 6); font-weight: 700;">&nbsp;&nbsp;&nbsp;</strong><strong
+                                                                        class="font-size-24 m-font-size-19"
+                                                                        style="display: initial; color: rgb(8, 0, 255); font-weight: 700;">Veranstaltungen
+                                                                        :</strong><span style="display: initial;"><span
+                                                                        class="ql-cursor">﻿</span></span></p>
+                                                                    <p><span style="display: initial;"><br></span></p>
+                                                                    <ul class="defaultList bullet">
+                                                                        <li class="m-size-14 size-18"><strong
+                                                                            class="m-font-size-14 font-size-18"
+                                                                            style="color: rgb(244, 6, 6); font-weight: bold; display: initial;">Sonntag,
+                                                                            18.Januar</strong><span
+                                                                            style="display: initial;"
+                                                                            single-space="true"> <span
+                                                                            style="display: initial;"></span>
+</span><strong class="m-font-size-14 font-size-18" style="display: initial; font-weight: bold;">Wanderung, näheres wird
+                                                                            noch bekannt gegeben.</strong></li>
+                                                                    </ul>
+                                                                    <p><span style="display: initial;"><br></span></p>
+                                                                    <ul class="defaultList bullet">
+                                                                        <li class="m-size-14 size-18"><strong
+                                                                            class="m-font-size-14 font-size-18"
+                                                                            style="color: rgb(244, 6, 6); font-weight: bold; display: initial;">Donnerstag,
+                                                                            22.Januar</strong><span
+                                                                            style="display: initial;"
+                                                                            single-space="true"> <span
+                                                                            style="display: initial;"></span>
+</span><strong class="m-font-size-14 font-size-18" style="display: initial; font-weight: bold;">geselliger Nachmittag im
+                                                                            Cafe Arte ab 14:30 Uhr.</strong></li>
+                                                                    </ul>
+                                                                    <p><span style="display: initial;"><br></span></p>
+                                                                    <ul class="defaultList bullet">
+                                                                        <li class="m-size-14 size-18"><strong
+                                                                            class="m-font-size-14 font-size-18"
+                                                                            style="color: rgb(244, 6, 6); font-weight: bold; display: initial;">Geplant
+                                                                            2026:</strong><span
+                                                                            style="display: initial;"
+                                                                            single-space="true"> <span
+                                                                            style="display: initial;"></span>
+</span><strong class="m-font-size-14 font-size-18" style="display: initial; font-weight: bold;">Ausflug zum
+                                                                            Dokumentationszentrum am Obersalzberg in
+                                                                            Berchtesgaden, eventuell mit Führung, Bei
+                                                                            Interesse bitte melden, Anmeldung
+                                                                            erforderlich beim Vorstand, Termin wird noch
+                                                                            festgelegt.</strong></li>
+                                                                    </ul>
+                                                                    <p><span style="display: initial;"><br></span></p>
+                                                                    <p><span style="display: initial;"><br></span></p>
+                                                                    <p><span style="display: initial;"><br></span></p>
+                                                                    <p><span style="display: initial;"><br><br></span>
+                                                                    </p>
+                                                                    <ul class="defaultList bullet">
+                                                                        <li class="text-align-left m-size-14 size-18">
+                                                                            <strong class="font-size-18 m-font-size-14"
+                                                                                    style="display: initial; font-weight: bold;">Alle
+                                                                                Veranstaltungen werden hier angekündigt,
+                                                                                oder auch im Schaukasten und in der
+                                                                                Presse.</strong></li>
+                                                                    </ul>
+                                                                    <p class="text-align-left"><span
+                                                                        style="display: initial;"><br></span></p>
+                                                                    <p class="text-align-left m-size-14 size-18"><strong
+                                                                        class="m-font-size-14 font-size-18"
+                                                                        style="font-weight: bold; display: initial;">&nbsp;
+                                                                        &nbsp; &nbsp; &nbsp;</strong><span
+                                                                        style="display: initial;"><span
+                                                                        style="display: initial;">&nbsp;</span>
+</span><strong class="m-font-size-14 font-size-18" style="display: initial; font-weight: bold; color: rgb(8, 0, 255);">Bei
+                                                                        jeder Veranstaltung sind</strong><span
+                                                                        style="display: initial;">&nbsp;</span><strong
+                                                                        class="m-font-size-14 font-size-18"
+                                                                        style="display: initial; font-weight: 700; color: rgb(8, 0, 255);">Freunde
+                                                                        und&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                                                        &nbsp; &nbsp; &nbsp; &nbsp;</strong><strong
+                                                                        class="m-font-size-14 font-size-18"
+                                                                        style="display: initial; font-weight: bold; color: rgb(8, 0, 255);">Gäste
+                                                                        herzlich willkommen.</strong></p>
+                                                                    <p class="text-align-left"><span
+                                                                        style="display: initial;"><br></span></p>
+                                                                    <p class="text-align-left"><span
+                                                                        style="display: initial;"><br></span></p>
+                                                                    <ul class="defaultList custom-list-3">
+                                                                        <li class="m-size-14 text-align-left size-18">
+                                                                            <strong class="m-font-size-14 font-size-18"
+                                                                                    style="font-style: italic; font-weight: bold; display: initial;">Folge
+                                                                                uns auf Instagram und Facebook</strong>
+                                                                        </li>
+                                                                    </ul>
+                                                                    <p class="text-align-left"><span
+                                                                        style="display: initial;"><br></span></p>
+                                                                    <p class="text-align-left"><span
+                                                                        style="display: initial;"><br></span></p>
+                                                                    <p class="m-size-11 text-align-left size-14"><strong
+                                                                        class="font-size-14 m-font-size-11"
+                                                                        style="text-decoration: none; font-weight: bold; display: initial; color: rgb(240, 37, 37);">&nbsp;
+                                                                        &nbsp; &nbsp; &nbsp; Weitere Vereinsaktivitäten
+                                                                        und nähere</strong></p>
+                                                                    <p class="m-size-11 text-align-left size-14"><strong
+                                                                        class="font-size-14 m-font-size-11"
+                                                                        style="text-decoration: none; font-weight: bold; display: initial; color: rgb(240, 37, 37);">&nbsp;
+                                                                        &nbsp; &nbsp; &nbsp; Infos siehe auch unter
+                                                                        Terminplan!!</strong><span
+                                                                        style="display: initial;"><br></span></p></div>
+                                                            </div>
+                                                            <div
+                                                                class="dmRespCol small-12 u_1215197835 medium-6 large-6"
+                                                                id="1215197835"><a data-display-type="block"
+                                                                                   class="u_1998034560 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient"
+                                                                                   file="false"
+                                                                                   href="https://www.naturfreunde-traunreut.de/blog"
+                                                                                   data-element-type="dButtonLinkId"
+                                                                                   id="1998034560"
+                                                                                   data-buttonstyle="BORDER_SHORT"> <span
+                                                                class="iconBg" aria-hidden="true" id="1271925768"> <span
+                                                                class="icon hasFontIcon icon-star"
+                                                                id="1020470671"></span>
+</span>
+                                                                <span class="text" id="1718931386">Unsere Aktionen und Veranstaltungen</span>
+                                                            </a>
+                                                                <a data-display-type="block"
+                                                                   class="u_1159966692 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient flexButton"
+                                                                   file="true"
+                                                                   href="https://cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/files/uploaded/WhatsApp+Video+2025-12-14+at+16.39.15.mp4?Expires=1770466193&amp;Signature=ViTUipnk6uzfqqtfSDQFjExSaqPoPmjxtKHlRh4FkSgInCbNJujtjMjvD88R2H1gWpvZrs~OkQpbrkGIMU8~GgY~aud6iXQvNzaDH7OlDTM2CIUu3UziSfrBtv4bSn6CzXCGfhkUovzbHft7KvJ9mNxH9oj59PrXb1K5fchv5RnHTu5bpVAgzwemygio4V-TdduZGdLyB45AahF2ZjDx68SRgse7KBne2botC2qJ2QbZapTfSljglw-2wXuG3aYr92izgMU2sqVl3aYZNdQ5UeIFv6qg~5biORW0m3XhCxU7Afrz25BjNDyBmcIeLSdgfSoZIoRaorCTbeKwko~exA__&amp;Key-Pair-Id=K2NXBXLF010TJW"
+                                                                   data-element-type="dButtonLinkId" id="1159966692"
+                                                                   data-buttonstyle="FLAT_ROUND_ICON"
+                                                                   target="_blank"> <span class="iconBg"
+                                                                                          aria-hidden="true"
+                                                                                          id="1563291652"> <span
+                                                                    class="icon hasFontIcon icon-star"
+                                                                    id="1077424871"></span>
+</span>
+                                                                    <span class="text"
+                                                                          id="1770760019">Im Meggenthal</span>
+                                                                </a>
+                                                                <div class="dmNewParagraph"
+                                                                     data-element-type="paragraph" data-version="5"
+                                                                     id="1493792604"><p class="m-size-19 size-24">
+                                                                    <strong class="font-size-24 m-font-size-19"
+                                                                            style="color: rgb(244, 6, 6); display: unset; font-weight: bold;">Veranstaltungshinweise</strong>
+                                                                </p></div>
+                                                                <div class="u_1739416203 imageWidget align-center"
+                                                                     data-element-type="image" data-widget-type="image"
+                                                                     id="1739416203" editablewidget="true"><img
+                                                                    src="./Home_files/wehrpflicht+jpg+gut-1920w.png"
+                                                                    alt="" id="1498485593" class="" width="1920"
+                                                                    height="2715"
+                                                                    data-dm-image-path="https://cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/dms3rep/multi/wehrpflicht+jpg+gut.png"
+                                                                    onerror="handleImageLoadError(this)"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="u_1455673907 dmRespRow" id="1455673907">
+                                                        <div class="dmRespColsWrapper" id="1471889101">
+                                                            <div
+                                                                class="u_1999084768 dmRespCol small-12 medium-4 large-4"
+                                                                id="1999084768">
+                                                                <div class="u_1851456000 dmNewParagraph"
+                                                                     data-element-type="paragraph" id="1851456000"
+                                                                     style="transition: none 0s ease 0s; text-align: center; display: block;"
+                                                                     data-version="5"><h2 class="text-align-left"><span
+                                                                    style="display: initial; color: rgb(255, 0, 0);">Werden Sie Teil unserer solidarischen&nbsp; Gemeinschaft</span>
+                                                                </h2>
+                                                                </div>
+                                                                <div class="u_1982898497 dmNewParagraph"
+                                                                     data-element-type="paragraph" id="1982898497"
+                                                                     data-styletopreserve="{" background-image
+                                                                ":""}"="">
+                                                                <div><b style="font-size: 26px;">Naturfreunde - ein
+                                                                    starkes Netzwerk!</b><br></div>
+                                                            </div>
+                                                            <div class="dmNewParagraph" data-element-type="paragraph"
+                                                                 id="1123190369" data-styletopreserve="{"
+                                                                 background-image
+                                                            ":""}"="">
+                                                            <div>Die Naturfreunde sind eine internationale Umwelt-,
+                                                                Kultur-, Freizeit- und Touristikorganisation. Von
+                                                                österreichischen Sozialisten 1895 in Wien gegründet,
+                                                                gehören heute zur NaturFreunde-Bewegung etwa 500.000
+                                                                Mitglieder in 21 Ländern, darunter fast 100.000 in
+                                                                Deutschland. Die NaturFreunde Internationale (NFI) als
+                                                                Dachverband hat ihren Sitz in Wien.&nbsp;<br></div>
+                                                        </div>
+                                                        <h3 class="u_1257514631 dmNewParagraph" id="1257514631"
+                                                            style="transition: opacity 1s ease-in-out;"
+                                                            data-element-type="paragraph"><font style=""><font
+                                                            style="color: rgb(99, 95, 95);">Jetzt das Antragsformular
+                                                            ausfüllen und beitreten!</font><br></font></h3> <a
+                                                        data-inject="home-At11subscriptionButtonAnchor"
+                                                        data-display-type="block"
+                                                        class="u_1701109239 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient"
+                                                        file="true"
+                                                        href="https://cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/files/uploaded/Beitrittserkl%C3%A4rung.pdf?Expires=1770466193&amp;Signature=peQSdrvtuYs-KKfMBV0EtuOIZdFbg4UcHIt01LgXLvaz~Gu8Tbj1eYss70OV4ha-W82WU6EOF71Q811VCp8jTx1yU7yEWeLfKRVL9q8EmlJEDwDcjRvq5HMvwOG9o~HN0mzT7--A6VX82Qe0u6XocBLHYazCw7Iye2pRuPVBYR8WTQuzr5FbmWFvhAPDytCDfAATYTaTrUy2orFNkpFn~4G2alMF14F3qE7sjjZmZrLef86u-W5qxi-mKd2CzL2yiGphL6~Xz00EK1YgcHmNtRpiusejRdfYVc~7tNMzM-MVf0D-fzBV5hZRUtP64pxFizDJmZTSSubaz6PrhypDww__&amp;Key-Pair-Id=K2NXBXLF010TJW"
+                                                        id="1701109239" data-buttonstyle="ROUND_SIDES"
+                                                        data-element-type="dButtonLinkId" target="_blank"> <span
+                                                        class="iconBg" id="1823339580"> <span
+                                                        class="icon hasFontIcon icon-star" id="1981123860"></span>
+</span>
+                                                        <span data-inject="home-At11subscriptionButton" class="text"
+                                                              id="1635828193">Mitglied werden</span>
+                                                    </a>
+                                                    </div>
+                                                    <div class="u_1501190250 dmRespCol small-12 medium-4 large-4"
+                                                         id="1501190250">
+                                                        <div class="u_1872564352 imageWidget align-center"
+                                                             data-element-type="image" data-widget-type="image"
+                                                             id="1872564352" editablewidget="true"><a
+                                                            id="1132839664"><img
+                                                            src="./Home_files/260px-Naturfreunde-1920w.png" alt=""
+                                                            id="1205684780" class=""
+                                                            data-dm-image-path="https://cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/dms3rep/multi/260px-Naturfreunde.png"
+                                                            width="250" height="265"
+                                                            onerror="handleImageLoadError(this)"></a>
+                                                        </div>
+                                                        <a data-display-type="block"
+                                                           class="u_1053220983 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient"
+                                                           file="false" href="https://www.nf-int.org/"
+                                                           data-element-type="dButtonLinkId" id="1053220983"
+                                                           target="_blank" data-buttonstyle="BORDER_SHORT"> <span
+                                                            class="iconBg" aria-hidden="true" id="1716799258"> <span
+                                                            class="icon hasFontIcon icon-star" id="1511814615"></span>
+</span>
+                                                            <span class="text"
+                                                                  id="1242630670">Weiter zum Weltverband</span>
+                                                        </a>
+                                                        <a data-display-type="block"
+                                                           class="u_1310630070 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient"
+                                                           file="false" href="https://www.naturfreunde.de/"
+                                                           data-element-type="dButtonLinkId" id="1310630070"
+                                                           target="_blank" data-buttonstyle="BIG_BASIC"> <span
+                                                            class="iconBg" aria-hidden="true" id="1618097807"> <span
+                                                            class="icon hasFontIcon icon-star" id="1332726460"></span>
+</span>
+                                                            <span class="text" id="1257325311">Bundesverband</span>
+                                                        </a>
+                                                        <a data-display-type="block"
+                                                           class="u_1589586770 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient"
+                                                           file="false" href="https://www.naturfreunde-bayern.de/"
+                                                           data-element-type="dButtonLinkId" id="1589586770"
+                                                           target="_blank" data-buttonstyle="BIG_BASIC"> <span
+                                                            class="iconBg" aria-hidden="true" id="1138599589"> <span
+                                                            class="icon hasFontIcon icon-star" id="1770048457"></span>
+</span>
+                                                            <span class="text" id="1853696221">Landesverband</span>
+                                                        </a>
+                                                        <a data-display-type="block"
+                                                           class="u_1359798522 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient"
+                                                           file="false" href="https://bayern.naturfreundejugend.de/"
+                                                           data-element-type="dButtonLinkId" id="1359798522"
+                                                           data-buttonstyle="BORDER_SHORT" target="_blank"> <span
+                                                            class="iconBg" aria-hidden="true" id="1465850889"> <span
+                                                            class="icon hasFontIcon icon-star" id="1143783437"></span>
+</span>
+                                                            <span class="text" id="1228320907"></span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="dmRespCol small-12 medium-4 large-4" id="1483149782"><a
+                                                        data-display-type="block"
+                                                        class="u_1246712587 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient flexButton"
+                                                        file="true"
+                                                        href="https://cdn.website-editor.net/s/a0f8452be095453aa9e8b886c124c303/files/uploaded/Flyer-Allgemein-eccd9cf6.pdf?Expires=1770466193&amp;Signature=SuX5CMtZ~JnZYyY2Zm7ZzicdQ8g~qeDrtlAoFdYyfj2doBS3PX18dEajuYDNz3TQF8BKVfwKJ2up5ami1vKTl48f0ZncpIdoJ8UZNPMKBqA-Lanf2Q3UjiquCccstqvERt0jIAj2~TMSpKV9GlHU0VktUWyrj5zWGpJSyaVCB9HBYdQofXvnIhjs-EJ2VrGyCKlHqb7yo9UCG~RBBCK6Wx-Fl9BdG9LQlL4KSOeeK513kJ9ObKeHWkXuYJ52qGXFHbQFPU1-4KWu-mowoU2NXPIw2~-1-BdPM9h7ZlZhUGVpRyDgylTFpAeo8s43CE20IYuJnO2xZrERSF076c6j9w__&amp;Key-Pair-Id=K2NXBXLF010TJW"
+                                                        data-element-type="dButtonLinkId" id="1246712587"
+                                                        data-buttonstyle="BORDER_SHORT" target="_blank"> <span
+                                                        class="iconBg" aria-hidden="true" id="1780503143"> <span
+                                                        class="icon hasFontIcon icon-star" id="1435520212"></span>
+</span>
+                                                        <span class="text" id="1497860679"></span>
+                                                    </a>
+                                                        <div class="dmNewParagraph" data-element-type="paragraph"
+                                                             data-version="5" id="1210460390"><p
+                                                            class="size-24 m-size-19"><strong
+                                                            style="display: unset; font-weight: bold;"
+                                                            class="font-size-24 m-font-size-19">Unser Fyler</strong></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="u_1532695290 dmRespRow running-animation-O7CINMG5"
+                                                 style="text-align: center; visibility: hidden; opacity: 1; transition-delay: unset !important; transition-duration: unset !important; animation-delay: unset !important; animation-duration: unset !important; transition-property: none !important;"
+                                                 id="1532695290" data-anim-desktop="fadeIn">
+                                                <div class="dmRespColsWrapper" id="1386330807">
+                                                    <div class="dmRespCol small-12 medium-12 large-12" id="1314085566">
+                                                        <h3 class="u_1149073449 dmNewParagraph" id="1149073449"
+                                                            data-element-type="paragraph"
+                                                            style="transition: none 0s ease 0s; display: block;">
+                                                            <div align="center" style="text-align: left;"><b><font
+                                                                class="lh-1 font-size-30" style="">Veranstaltungskalender</font></b>
+                                                            </div>
+                                                        </h3>
+                                                        <div
+                                                            class="u_1638558577 graphicWidget graphicWidgetV2 graphicWidgetV3"
+                                                            data-element-type="graphic" data-widget-type="graphic"
+                                                            id="1638558577">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 70"
+                                                                 id="1659984004" class="svg u_1659984004"
+                                                                 data-icon-name="ar-arrow_down_tip">
+                                                                <path d="M38.5,58.5L23,37.6h9.7c-0.6-18.4-11-24.4-16.7-24.4v-1.6c11.4,0,19.3,4,23.9,11.9c3.3,5.6,4.1,11.5,4.2,14.2h9.8L38.5,58.5
+	z M26.2,39.2l12.2,16.5l12.2-16.5h-8.6v-0.8c0-3.8-0.8-21.2-19.1-24.6c5.3,3.3,11.1,10.8,11.3,24.6l0.1,0.8H26.2z"></path>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="dmRespRow u_1615368203" id="1615368203">
+                                                <div class="dmRespColsWrapper" id="1149540882">
+                                                    <div class="dmRespCol large-12 medium-12 small-12" id="1167525933">
+                                                        <div class="default u_1485141493 dm-google-calendar"
+                                                             id="1485141493" dmle_extension="googlecalendar"
+                                                             data-element-type="googlecalendar" wr="true" title=""
+                                                             data-custom-time-format="false" icon="true" surround="true"
+                                                             adwords="" data-ext=""
+                                                             data-public-calendar-id="aW5mb0BuYXR1cmZyZXVuZGUtdHJhdW5yZXV0LmRl"
+                                                             data-calendar-view="Monthly" data-week-start-on="Monday"
+                                                             data-time-format="HH:mm">
+                                                            <div class="calendar-container">
+                                                                <div class="navigation-header">
+                                                                    <div class="today-btn-container">
+                                                                        <svg version="1.1" viewBox="0 0 18 18"
+                                                                             width="1em"
+                                                                             xmlns="http://www.w3.org/2000/svg">
+                                                                            <g id="Page-1" stroke="none"
+                                                                               stroke-width="1" fill-rule="evenodd">
+                                                                                <g id="Google-Clendar---today-button"
+                                                                                   transform="translate(-94.000000, -126.000000)"
+                                                                                   fill="currentColor"
+                                                                                   fill-rule="nonzero">
+                                                                                    <g id="Group-16"
+                                                                                       transform="translate(94.000000, 126.000000)">
+                                                                                        <g id="Group-5">
+                                                                                            <path
+                                                                                                d="M15,1.5 C16.6568542,1.5 18,2.84314575 18,4.5 L18,15 C18,16.6568542 16.6568542,18 15,18 L3,18 C1.34314575,18 0,16.6568542 0,15 L0,4.5 C0,2.84314575 1.34314575,1.5 3,1.5 L3.75,1.5 L3.75,0.75 C3.75,0.335786438 4.08578644,0 4.5,0 C4.91421356,0 5.25,0.335786438 5.25,0.75 L5.25,1.5 L12.75,1.5 L12.75,0.75 C12.75,0.335786438 13.0857864,0 13.5,0 C13.9142136,0 14.25,0.335786438 14.25,0.75 L14.25,1.5 L15,1.5 Z M3,3 C2.17157288,3 1.5,3.67157288 1.5,4.5 L1.5,6 L16.5,6 L16.5,4.5 C16.5,3.67157288 15.8284271,3 15,3 L14.25,3 L14.25,3.75 C14.25,4.16421356 13.9142136,4.5 13.5,4.5 C13.0857864,4.5 12.75,4.16421356 12.75,3.75 L12.75,3 L5.25,3 L5.25,3.75 C5.25,4.16421356 4.91421356,4.5 4.5,4.5 C4.08578644,4.5 3.75,4.16421356 3.75,3.75 L3.75,3 L3,3 Z M15,16.5 C15.8284271,16.5 16.5,15.8284271 16.5,15 L16.5,7.5 L1.5,7.5 L1.5,15 C1.5,15.8284271 2.17157288,16.5 3,16.5 L15,16.5 Z M4.5,12 C3.67157288,12 3,11.3284271 3,10.5 C3,9.67157288 3.67157288,9 4.5,9 C5.32842712,9 6,9.67157288 6,10.5 C6,11.3284271 5.32842712,12 4.5,12 Z"
+                                                                                                id="Combined-Shape"></path>
+                                                                                        </g>
+                                                                                    </g>
+                                                                                </g>
+                                                                            </g>
+                                                                        </svg>
+                                                                    </div>
+                                                                    <div class="month-navigation"> <span
+                                                                        class="left-arrow-container"> <svg
+                                                                        xmlns="http://www.w3.org/2000/svg" width="1em"
+                                                                        height="0.7em" viewBox="0 0 10 16"> <path
+                                                                        fill="currentColor" fill-rule="nonzero"
+                                                                        d="M9.6 1.62L7.985 0 0 8l7.985 8L9.6 14.38 3.235 8z"></path>
+</svg>
+</span>
+                                                                        <p class="month-year-container"><span
+                                                                            class="current-month-text">Januar</span>
+                                                                            <span class="current-year-text">2026</span>
+                                                                        </p>
+                                                                        <span class="right-arrow-container"> <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="1em" height="0.7em"
+                                                                            viewBox="0 0 10 16"> <path
+                                                                            fill="currentColor" fill-rule="nonzero"
+                                                                            d="M0 1.62L1.615 0 9.6 8l-7.985 8L0 14.38 6.365 8z"></path>
+</svg>
+</span>
+                                                                    </div>
+                                                                    <div class="calendar-view-navigation"></div>
+                                                                </div>
+                                                                <div class="week-day-names-header">
+                                                                    <div class="day-name">Mo</div>
+                                                                    <div class="day-name">Di</div>
+                                                                    <div class="day-name">Mi</div>
+                                                                    <div class="day-name">Do</div>
+                                                                    <div class="day-name">Fr</div>
+                                                                    <div class="day-name">Sa</div>
+                                                                    <div class="day-name">So</div>
+                                                                </div>
+                                                                <div class="weeks-container">
+                                                                    <div class="week-container">
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="not-day-of-month-day29">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+                not-day-of-month-text
+
+        ">29</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="not-day-of-month-day30">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+                not-day-of-month-text
+
+        ">30</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="not-day-of-month-day31">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+                not-day-of-month-text
+
+        ">31</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day1">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">1</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day2">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">2</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day3">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">3</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day4">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">4</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="week-container">
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day5">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">5</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day6">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">6</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day7">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">7</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day8">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+                today
+        ">8</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day9">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">9</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day10">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">10</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day11">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">11</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="week-container">
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day12">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">12</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day13">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">13</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day14">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">14</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day15">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">15</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day16">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">16</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day17">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">17</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W3siZXZlbnRCNjQiOiJleUp6ZEdGeWRDSTZJbE4xYml3Z1NtRnVkV0Z5ZVNBeE9Dd2dNREE2TURBaUxDSmtZWFJsSWpvaVUzVnVMQ0JLWVc1MVlYSjVJREU0SWl3aWFYTkJiR3hFWVhsRmRtVnVkQ0k2SW5SeWRXVWlMQ0p6ZFcxdFlYSjVJam9pVjJGdVpHVnlkVzVuSUdkbGNHeGhiblFpTENKbGJtUWlPaUpOYjI0c0lFcGhiblZoY25rZ01Ua3NJREF3T2pBd0lpd2laR1Z6WTNKcGNIUnBiMjRpT2lKT3c2Um9aWEpsY3lCM2FYSmtJRzV2WTJnZ1ltVnJZVzV1ZENCblpXZGxZbVZ1SW4wPSIsInN0YXJ0IjoiMDA6MDAiLCJpc0FsbERheUV2ZW50Ijp0cnVlLCJzdW1tYXJ5IjoiV2FuZGVydW5nIGdlcGxhbnQiLCJlbmQiOiIwMDowMCIsImRlc2NyaXB0aW9uIjoiTsOkaGVyZXMgd2lyZCBub2NoIGJla2FubnQgZ2VnZWJlbiJ9XQ=="
+                                                                             data-has-events="true" data-auto="day18">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">18</p>
+                                                                            </div>
+                                                                            <div class="events-container"><p
+                                                                                class="event-container"
+                                                                                data-calendar-event="eyJzdGFydCI6IlN1biwgSmFudWFyeSAxOCwgMDA6MDAiLCJkYXRlIjoiU3VuLCBKYW51YXJ5IDE4IiwiaXNBbGxEYXlFdmVudCI6InRydWUiLCJzdW1tYXJ5IjoiV2FuZGVydW5nIGdlcGxhbnQiLCJlbmQiOiJNb24sIEphbnVhcnkgMTksIDAwOjAwIiwiZGVzY3JpcHRpb24iOiJOw6RoZXJlcyB3aXJkIG5vY2ggYmVrYW5udCBnZWdlYmVuIn0=">
+                                                                                <span>Wanderung geplant</span>
+                                                                            </p>
+                                                                            </div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="week-container">
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day19">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">19</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day20">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">20</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day21">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">21</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W3siZXZlbnRCNjQiOiJleUp6ZEdGeWRDSTZJbFJvZFN3Z1NtRnVkV0Z5ZVNBeU1pd2dNREE2TURBaUxDSmtZWFJsSWpvaVZHaDFMQ0JLWVc1MVlYSjVJREl5SWl3aWFYTkJiR3hFWVhsRmRtVnVkQ0k2SW5SeWRXVWlMQ0p6ZFcxdFlYSjVJam9pUjJWelpXeHNhV2RsY2lCT1lXTm9iV2wwZEdGbklpd2laVzVrSWpvaVJuSnBMQ0JLWVc1MVlYSjVJREl6TENBd01Eb3dNQ0lzSW1SbGMyTnlhWEIwYVc5dUlqb2lTVzBnUTJGbVpTQkJjblJsSUdGaUlERTBPak13SUZWb2NpSjkiLCJzdGFydCI6IjAwOjAwIiwiaXNBbGxEYXlFdmVudCI6dHJ1ZSwic3VtbWFyeSI6Ikdlc2VsbGlnZXIgTmFjaG1pdHRhZyIsImVuZCI6IjAwOjAwIiwiZGVzY3JpcHRpb24iOiJJbSBDYWZlIEFydGUgYWIgMTQ6MzAgVWhyIn1d"
+                                                                             data-has-events="true" data-auto="day22">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">22</p>
+                                                                            </div>
+                                                                            <div class="events-container"><p
+                                                                                class="event-container"
+                                                                                data-calendar-event="eyJzdGFydCI6IlRodSwgSmFudWFyeSAyMiwgMDA6MDAiLCJkYXRlIjoiVGh1LCBKYW51YXJ5IDIyIiwiaXNBbGxEYXlFdmVudCI6InRydWUiLCJzdW1tYXJ5IjoiR2VzZWxsaWdlciBOYWNobWl0dGFnIiwiZW5kIjoiRnJpLCBKYW51YXJ5IDIzLCAwMDowMCIsImRlc2NyaXB0aW9uIjoiSW0gQ2FmZSBBcnRlIGFiIDE0OjMwIFVociJ9">
+                                                                                <span>Geselliger Nachmittag</span>
+                                                                            </p>
+                                                                            </div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day23">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">23</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day24">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">24</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day25">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">25</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="week-container">
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day26">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">26</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day27">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">27</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day28">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">28</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day29">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">29</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day30">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">30</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="day31">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+
+
+        ">31</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                        <div class="monthly-day-card desktop"
+                                                                             data-day-events="W10=" data-has-events=""
+                                                                             data-auto="not-day-of-month-day1">
+                                                                            <div class="day-of-month-flex-container"><p
+                                                                                class="
+                not-day-of-month-text
+
+        ">1</p>
+                                                                            </div>
+                                                                            <div class="events-container"></div>
+                                                                            <div class="circle"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sticky-widgets-container-global" id="1407007466"></div>
+                            <div class="dmFooterContainer">
+                                <div id="fcontainer" class="f_hcontainer dmFooter p_hfcontainer">
+                                    <div dm:templateorder="250" class="dmFooterResp generalFooter" id="1943048428">
+                                        <div class="u_1465871800 dmRespRow dmFooterContent" id="1465871800">
+                                            <div class="dmRespColsWrapper" id="1995794985">
+                                                <div
+                                                    class="u_1251437857 dmRespCol dmFooterCol small-12 medium-4 large-4"
+                                                    id="1251437857"><span id="1761262666"></span>
+                                                    <div class="u_1802010659 dmNewParagraph" id="1802010659">
+                                                        <div>
+                                                            <div>
+                                                                <div style="text-align: left;"><font color="#ffffff"
+                                                                                                     data-inject="home-At11footerParagraph">Nehmen
+                                                                    Sie einfach Kontakt zu uns auf. Wir beantworten
+                                                                    gerne Ihre Fragen zu unserem Verein.</font></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="u_1938314074 graphicWidget" data-element-type="graphic"
+                                                         data-widget-type="graphic" id="1938314074"
+                                                         data-layout="graphic-style-1"><a
+                                                        href="mailto:info@naturfreunde-traunreut.de" id="1845431914"
+                                                        file="false" target="_blank">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+                                                             id="1728297172" class="svg u_1728297172"
+                                                             data-icon-name="li-envelope">
+                                                            <path
+                                                                d="M17.8,28.2v43.6h64.4V28.2H17.8z M77.7,30.3L50,48.8L22.3,30.3H77.7z M19.9,69.7V31.2L50,51.2l30.1-20.1v38.5H19.9z"></path>
+                                                        </svg>
+                                                    </a>
+                                                    </div>
+                                                </div>
+                                                <div class="u_1126056457 dmRespCol small-12 medium-4 large-4"
+                                                     id="1126056457"><span id="1299621032"></span>
+                                                    <div class="u_1396494604 dmNewParagraph" id="1396494604"
+                                                         style="display: block;">
+                                                        <div style="text-align: left;"><span
+                                                            style="background-color:rgba(0, 0, 0, 0);color:rgb(255, 255, 255);font-family:inherit;"><span
+                                                            data-inject="semantic-AddressLabel"><b>NaturFreunde e.V.&nbsp;</b></span></span>
+                                                        </div>
+                                                        <div style="text-align: left;"><span
+                                                            style="background-color:rgba(0, 0, 0, 0);color:rgb(255, 255, 255);font-family:inherit;"><span
+                                                            data-inject="semantic-AddressLabel"><b>Ortsgruppe Traunreut</b></span></span>
+                                                        </div>
+                                                        <div style="text-align: left;"><span
+                                                            style="background-color:rgba(0, 0, 0, 0);color:rgb(255, 255, 255);font-family:inherit;"><span
+                                                            data-inject="semantic-AddressLabel">Tel. +49 8621 9003115&nbsp;</span></span>
+                                                        </div>
+                                                        <div style="text-align: left;"><span
+                                                            style="background-color:rgba(0, 0, 0, 0);color:rgb(255, 255, 255);font-family:inherit;"><span
+                                                            data-inject="semantic-AddressLabel">info@naturfreunde-traunreut.de</span></span>
+                                                        </div>
+                                                        <div style="text-align: left;"><span
+                                                            style="background-color:rgba(0, 0, 0, 0);color:rgb(255, 255, 255);font-family:inherit;"><span
+                                                            data-inject="semantic-AddressLabel"><br></span></span></div>
+                                                    </div>
+                                                </div>
+                                                <div class="u_1819204698 dmRespCol small-12 medium-4 large-4"
+                                                     id="1819204698"><a data-display-type="block"
+                                                                        class="align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient u_1486554130"
+                                                                        file="false"
+                                                                        href="https://www.naturfreunde-traunreut.de/kontakt"
+                                                                        data-element-type="dButtonLinkId"
+                                                                        id="1486554130"> <span class="iconBg"
+                                                                                               id="1905654567"> <span
+                                                    class="icon hasFontIcon icon-star" id="1962644374"></span>
+</span>
+                                                    <span class="text" id="1294270929">Kontakt</span>
+                                                </a>
+                                                    <a data-display-type="block"
+                                                       class="align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient u_1149505390"
+                                                       file="false"
+                                                       href="https://www.naturfreunde-traunreut.de/impressum"
+                                                       data-element-type="dButtonLinkId" id="1149505390"> <span
+                                                        class="iconBg" id="1813009115"> <span
+                                                        class="icon hasFontIcon icon-star" id="1391512347"></span>
+</span>
+                                                        <span class="text" id="1393001828">Impressum</span>
+                                                    </a>
+                                                    <a data-display-type="block"
+                                                       class="align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient u_1732308859"
+                                                       file="false" href="https://www.naturfreunde-traunreut.de/newpage"
+                                                       data-element-type="dButtonLinkId" id="1732308859"> <span
+                                                        class="iconBg" id="1922956283"> <span
+                                                        class="icon hasFontIcon icon-star" id="1120377169"></span>
+</span>
+                                                        <span class="text" id="1931519750">Datenschutzerklärung</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="u_1547576853 dmRespRow" style="text-align: center;" id="1547576853">
+                                            <div class="dmRespColsWrapper" id="1297073477">
+                                                <div class="dmRespCol small-12 medium-12 large-12" id="1374588115"><span
+                                                    id="1158230937"></span>
+                                                    <div class="u_1722733299 dmNewParagraph" id="1722733299"
+                                                         style="display: block;">
+                                                        <div style="text-align: left;"><span
+                                                            style="background-color:rgba(0, 0, 0, 0);font-family:inherit;"><font
+                                                            data-inject="semantic-Copyright"
+                                                            style="color: rgb(255, 255, 255);">Copyright © Alle Rechte vorbehalten.</font></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="1236746004" dmle_extension="powered_by" data-element-type="powered_by"
+                                         icon="true" surround="false"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+<!--  Add full CSS and Javascript before the close tag of the body if needed -->
+<!-- ========= JS Section ========= -->
+<script>
+    var isWLR = true;
+
+    window.customWidgetsFunctions = {};
+    window.customWidgetsStrings = {};
+    window.collections = {};
+    window.currentLanguage = "GERMAN"
+    window.isSitePreview = false;
+</script>
+<script type="text/javascript">
+
+    var d_version = "production_6078";
+    var build = "2026-01-08T09_48_28";
+    window['v' + 'ersion'] = d_version;
+
+    function buildEditorParent() {
+        window.isMultiScreen = true;
+        window.editorParent = {};
+        window.previewParent = {};
+        window.assetsCacheQueryParam = "?version=2026-01-08T09_48_28";
+        try {
+            var _p = window.parent;
+            if (_p && _p.document && _p.$ && _p.$.dmfw) {
+                window.editorParent = _p;
+            } else if (_p.isSitePreview) {
+                window.previewParent = _p;
+            }
+        } catch (e) {
+
+        }
+    }
+
+    buildEditorParent();
+</script>
+
+<!-- Load jQuery -->
+<script type="text/javascript" id="d-js-jquery" src="./Home_files/jquery.min.js.Без названия"></script>
+<!-- End Load jQuery -->
+<!-- Injecting site-wide before scripts -->
+<!-- End Injecting site-wide to the head -->
+
+
+<script>
+    var _jquery = window.$;
+
+    var jqueryAliases = ['$', 'jquery', 'jQuery'];
+
+    jqueryAliases.forEach((alias) => {
+        Object.defineProperty(window, alias, {
+            get() {
+                return _jquery;
+            },
+            set() {
+                console.warn("Trying to over-write the global jquery object!");
+            }
+        });
+    });
+    window.jQuery.migrateMute = true;
+</script>
+<script>
+    window.cookiesNotificationMarkupPreview = ' <div>Diese Webseite verwendet Cookies, um Ihnen ein optimales Online-Erlebnis bieten zu k&ouml;nnen. Durch die Nutzung dieser Webseite erkl&auml;ren Sie sich mit der Verwendung von Cookies einverstanden. <a href=\"\/privacy\" target=\"_blank\">Mehr Infos<\/a> \n<\/div> \n';
+</script>
+
+<!-- HEAD RT JS Include -->
+<script id="d-js-params">
+    window.INSITE = window.INSITE || {};
+    window.INSITE.device = "desktop";
+
+    window.rtCommonProps = {};
+    rtCommonProps["rt.ajax.ajaxScriptsFix"] = true;
+    rtCommonProps["rt.pushnotifs.sslframe.encoded"] = 'aHR0cHM6Ly97c3ViZG9tYWlufS5wdXNoLW5vdGlmcy5jb20=';
+    rtCommonProps["runtimecollector.url"] = 'https://rtc.website-editor.net';
+    rtCommonProps["performance.tabletPreview.removeScroll"] = 'false';
+    rtCommonProps["inlineEditGrid.snap"] = true;
+    rtCommonProps["popup.insite.cookie.ttl"] = '0.5';
+    rtCommonProps["rt.pushnotifs.force.button"] = true;
+    rtCommonProps["common.mapbox.token"] = 'pk.eyJ1IjoiZGFubnliMTIzIiwiYSI6ImNqMGljZ256dzAwMDAycXBkdWxwbDgzeXYifQ.Ck5P-0NKPVKAZ6SH98gxxw';
+    rtCommonProps["common.mapbox.js.override"] = false;
+    rtCommonProps["common.here.appId"] = 'iYvDjIQ2quyEu0rg0hLo';
+    rtCommonProps["common.here.appCode"] = '1hcIxLJcbybmtBYTD9Z1UA';
+    rtCommonProps["isCoverage.test"] = false;
+    rtCommonProps["ecommerce.ecwid.script"] = 'https://app.multiscreenstore.com/script.js';
+    rtCommonProps["common.resources.dist.cdn"] = true;
+    rtCommonProps["common.build.dist.folder"] = 'production/6078';
+    rtCommonProps["common.resources.cdn.host"] = 'https://static-cdn.website-editor.net';
+    rtCommonProps["common.resources.folder"] = 'https://static-cdn.website-editor.net/mnlt/production/6078';
+    rtCommonProps["feature.flag.runtime.backgroundSlider.preload.slowly"] = true;
+    rtCommonProps["feature.flag.runtime.newAnimation.enabled"] = true;
+    rtCommonProps["feature.flag.runtime.newAnimation.jitAnimation.enabled"] = true;
+    rtCommonProps["feature.flag.sites.google.analytics.gtag"] = true;
+    rtCommonProps["feature.flag.runOnReadyNewTask"] = true;
+    rtCommonProps["isAutomation.test"] = false;
+    rtCommonProps["booking.cal.api.domain"] = 'api.cal.com';
+
+
+    rtCommonProps['common.mapsProvider'] = 'mapbox';
+
+    rtCommonProps['common.mapsProvider.version'] = '0.52.0';
+    rtCommonProps['common.geocodeProvider'] = 'mapbox';
+    rtCommonProps['server.for.resources'] = '';
+    rtCommonProps['feature.flag.lazy.widgets'] = true;
+    rtCommonProps['feature.flag.single.wow'] = false;
+    rtCommonProps['feature.flag.disallowPopupsInEditor'] = true;
+    rtCommonProps['feature.flag.mark.anchors'] = true;
+    rtCommonProps['captcha.public.key'] = '6LffcBsUAAAAAMU-MYacU-6QHY4iDtUEYv_Ppwlz';
+    rtCommonProps['captcha.invisible.public.key'] = '6LeiWB8UAAAAAHYnVJM7_-7ap6bXCUNGiv7bBPME';
+    rtCommonProps["images.sizes.small"] = 160;
+    rtCommonProps["images.sizes.mobile"] = 640;
+    rtCommonProps["images.sizes.tablet"] = 1280;
+    rtCommonProps["images.sizes.desktop"] = 1920;
+    rtCommonProps["modules.resources.cdn"] = true;
+    rtCommonProps["import.images.storage.imageCDN"] = 'https://le-cdn.website-editor.net/';
+    rtCommonProps["feature.flag.runtime.inp.threshold"] = 150;
+    rtCommonProps["feature.flag.performance.logs"] = true;
+    rtCommonProps["site.widget.form.captcha.type"] = 'g_recaptcha';
+    rtCommonProps["friendly.captcha.site.key"] = 'FCMGSQG9GVNMFS8K';
+    rtCommonProps["cookiebot.mapbox.consent.category"] = 'marketing';
+    // feature flags that's used out of runtime module (in  legacy files)
+    rtCommonProps["platform.monolith.personalization.dateTimeCondition.popupMsgAction.moveToclient.enabled"] = true;
+
+    window.rtFlags = {};
+    rtFlags["unsuspendEcwidStoreOnRuntime.enabled"] = false;
+    rtFlags["scripts.widgetCount.enabled"] = true;
+    rtFlags["fnb.animations.tracking.enabled"] = true;
+    rtFlags["ecom.ecwidNewUrlStructure.enabled"] = false;
+    rtFlags["ecom.ecwid.accountPage.emptyBaseUrl.enabled"] = true;
+    rtFlags["ecom.ecwid.pages.links.disable.listeners"] = true;
+    rtFlags["ecom.ecwid.storefrontV3.enabled"] = false;
+    rtFlags["ecom.ecwid.old.store.fix.facebook.share"] = true;
+    rtFlags["feature.flag.photo.gallery.exact.size"] = true;
+    rtFlags["geocode.search.localize"] = false;
+    rtFlags["feature.flag.runtime.newAnimation.asyncInit.setTimeout.enabled"] = false;
+    rtFlags["twitter.heightLimit.enabled"] = true;
+    rtFlags["runtime.lottieOverflow"] = false;
+    rtFlags["runtime.monitoring.sentry.ignoreErrors"] = "";
+    rtFlags["streamline.monolith.personalization.supportMultipleConditions.enabled"] = false;
+    rtFlags["flex.animation.design.panel.layout"] = false;
+    rtFlags["runtime.cwv.report.cls.enabled"] = false;
+    rtFlags["runtime.cwv.report.lcp.enabled"] = false;
+    rtFlags["flex.runtime.popup.with.show"] = true;
+    rtFlags["contact.form.useActiveForm"] = true;
+    rtFlags["contact.form.custom.errors.enabled"] = false;
+    rtFlags["runtime.ssr.productStore.internal.observer"] = true;
+    rtFlags["runtime.ssr.productCustomizations"] = true;
+    rtFlags["runtime.ssr.runtime.filter-sort.newFilterSortWidgetWithOptions.enabled"] = false;
+</script>
+<script src="./Home_files/d-js-one-runtime-unified-desktop.min.js.Без названия" id="d-js-core"></script>
+<!-- End of HEAD RT JS Include -->
+<script>
+
+    $(window).bind("orientationchange", function (e) {
+        $.layoutManager.initLayout();
+
+    });
+    $(document).resize(function () {
+
+    });
+</script>
+<script type="text/javascript" id="d_track_campaign">
+    (function () {
+        if (!window.location.search) {
+            return;
+        }
+        const cleanParams = window.location.search.substring(1); // Strip ?
+        const queryParams = cleanParams.split('&');
+
+        const expires = 'expires=' + new Date().getTime() + 24 * 60 * 60 * 1000;
+        const domain = 'domain=' + window.location.hostname;
+        const path = "path=/";
+
+        queryParams.forEach((param) => {
+            const [key, value = ''] = param.split('=');
+            if (key.startsWith('utm_')) {
+                const cookieName = "_dm_rt_" + key.substring(4);
+                const cookie = cookieName + "=" + value;
+                const joined = [cookie, expires, domain, path].join(";");
+                document.cookie = joined;
+            }
+        });
+    }());
+</script>
+<script type="text/javascript">
+    var _dm_gaq = {};
+    var _gaq = _gaq || [];
+    var _dm_insite = [];
+</script>
+
+<script type="text/javascript" id="d_track_sp">
+    ;(function (p, l, o, w, i, n, g) {
+        if (!p[i]) {
+            p.GlobalSnowplowNamespace = p.GlobalSnowplowNamespace || [];
+            p.GlobalSnowplowNamespace.push(i);
+            p[i] = function () {
+                (p[i].q = p[i].q || []).push(arguments)
+            };
+            p[i].q = p[i].q || [];
+            n = l.createElement(o);
+            g = l.getElementsByTagName(o)[0];
+            n.async = 1;
+            n.src = w;
+            g.parentNode.insertBefore(n, g)
+        }
+    }(window, document, "script", "//d1dxoqu0t5mb7j.cloudfront.net/sp-2.0.0-dm-0.1.min.js", "snowplow"));
+    window.dmsnowplow = window.snowplow;
+
+    dmsnowplow('newTracker', 'cf', 'd1dxoqu0t5mb7j.cloudfront.net', { // Initialise a tracker
+        appId: 'a0f8452be095453aa9e8b886c124c303'
+    });
+
+    // snowplow queries element styles so we wait until CSS calculations are done.
+    requestAnimationFrame(() => {
+        dmsnowplow('trackPageView');
+        _dm_insite.forEach((rule) => {
+            // Specifically in popup only the client knows if it is shown or not so we don't always want to track its impression here
+            // the tracking is in popup.js
+            if (rule.actionName !== "popup") {
+                dmsnowplow('trackStructEvent', 'insite', 'impression', rule.ruleType, rule.ruleId);
+            }
+            window?.waitForDeferred?.('dmAjax', () => {
+                $.DM.events.trigger('event-ruleTriggered', {value: rule});
+            });
+        });
+    });
+</script>
+<div style="display:none;" id="P6iryBW0Wu"></div>
+
+<!-- photoswipe markup -->
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe.
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides.
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Schließen (ESC)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Teilen"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Vollbild ein-/ausschalten"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Vergrößern/verkleinern"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Zurück (Pfeil nach links)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Weiter (Pfeil nach rechts)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div id="fb-root" data-locale="de_DE"></div>
+<!-- Alias: a0f8452be095453aa9e8b886c124c303 -->
+<div class="dmPopupMask" id="dmPopupMask"></div>
+<div id="dmPopup" class="dmPopup">
+    <div class="dmPopupCloseWrapper">
+        <div class="dmPopupClose dm-common-icons-close oneIcon" onclick="dmHidePopup(event);"></div>
+    </div>
+    <div class="dmPopupTitle"><span></span> Share by:</div>
+    <div class="data"></div>
+</div>
+<script id="d_track_personalization">
+    window?.waitForDeferred?.('dmAjax', () => {
+        // Collects client data and updates cookies used by smart sites
+        window.expireDays = 365;
+        window.visitLength = 30 * 60000;
+        $.setCookie("dm_timezone_offset", (new Date()).getTimezoneOffset(), window.expireDays);
+        setSmartSiteCookiesInternal("dm_this_page_view", "dm_last_page_view", "dm_total_visits", "dm_last_visit");
+    });
+</script>
+<script type="text/javascript">
+
+    Parameters.NavigationAreaParams.MoreButtonText = '......';
+
+    Parameters.NavigationAreaParams.LessButtonText = 'LESS';
+    Parameters.HomeLinkText = 'Home';
+</script>
+<!--  End Script tags -->
+<!--  Site Wide Html Markup -->
+<!--  Site Wide Html Markup -->
+<!--  Begin Product Custom HTML Markup -->
+<script>
+    function call1and1Tracking() {
+        var externalId = dmAPI.getSiteExternalId();
+        var siteName = dmAPI.getSiteName();
+        var src = 'https://integration.mywebsite-editor.com/dakota-snippet-service/snippet/integration/snippet.js?sitename=' + siteName + '&external_uid=' + externalId + '&mode=visit'
+        var tracking = document.createElement('script');
+        tracking.setAttribute('src', src);
+        document.head.appendChild(tracking);
+    }
+
+    call1and1Tracking();
+</script><!--  End Product Custom HTML Markup -->
+<div id="goog-gt-tt" class="VIpgJd-yAWNEb-L7lbkb skiptranslate"
+     style="border-radius: 12px; margin: 0 0 0 -23px; padding: 0; font-family: &#39;Google Sans&#39;, Arial, sans-serif;"
+     data-id="">
+    <div id="goog-gt-vt" class="VIpgJd-yAWNEb-hvhgNd">
+        <div class="VIpgJd-yAWNEb-hvhgNd-Ud7fr"><img src="./Home_files/24px.svg" width="24" height="24" alt="">
+            <div class=" VIpgJd-yAWNEb-hvhgNd-IuizWc-i3jM8c " dir="ltr">Исходный текст</div>
+        </div>
+        <div class="VIpgJd-yAWNEb-hvhgNd-k77Iif">
+            <div id="goog-gt-original-text" class="VIpgJd-yAWNEb-nVMfcd-fmcmS VIpgJd-yAWNEb-hvhgNd-axAV1"></div>
+        </div>
+        <div class="VIpgJd-yAWNEb-hvhgNd-N7Eqid ltr">
+            <div class="VIpgJd-yAWNEb-hvhgNd-N7Eqid-B7I4Od ltr" dir="ltr">
+                <div class="VIpgJd-yAWNEb-hvhgNd-UTujCb">Оцените этот перевод</div>
+                <div class="VIpgJd-yAWNEb-hvhgNd-eO9mKe">Ваш отзыв поможет нам улучшить Google Переводчик</div>
+            </div>
+            <div class="VIpgJd-yAWNEb-hvhgNd-xgov5 ltr">
+                <button id="goog-gt-thumbUpButton" type="button" class="VIpgJd-yAWNEb-hvhgNd-bgm6sf"
+                        title="Хороший перевод" aria-label="Хороший перевод" aria-pressed="false"><span
+                    id="goog-gt-thumbUpIcon"><svg width="24" height="24" viewBox="0 0 24 24" focusable="false"
+                                                  class="VIpgJd-yAWNEb-hvhgNd-THI6Vb NMm5M"><path
+                    d="M21 7h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 0S7.08 6.85 7 7H2v13h16c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73V9c0-1.1-.9-2-2-2zM7 18H4V9h3v9zm14-7l-3 7H9V8l4.34-4.34L12 9h9v2z"></path></svg></span><span
+                    id="goog-gt-thumbUpIconFilled"><svg width="24" height="24" viewBox="0 0 24 24" focusable="false"
+                                                        class="VIpgJd-yAWNEb-hvhgNd-THI6Vb NMm5M"><path
+                    d="M21 7h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 0S7.08 6.85 7 7v13h11c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73V9c0-1.1-.9-2-2-2zM5 7H1v13h4V7z"></path></svg></span>
+                </button>
+                <button id="goog-gt-thumbDownButton" type="button" class="VIpgJd-yAWNEb-hvhgNd-bgm6sf"
+                        title="Плохой перевод" aria-label="Плохой перевод" aria-pressed="false"><span
+                    id="goog-gt-thumbDownIcon"><svg width="24" height="24" viewBox="0 0 24 24" focusable="false"
+                                                    class="VIpgJd-yAWNEb-hvhgNd-THI6Vb NMm5M"><path
+                    d="M3 17h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 24s7.09-6.85 7.17-7h5V4H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2zM17 6h3v9h-3V6zM3 13l3-7h9v10l-4.34 4.34L12 15H3v-2z"></path></svg></span><span
+                    id="goog-gt-thumbDownIconFilled"><svg width="24" height="24" viewBox="0 0 24 24" focusable="false"
+                                                          class="VIpgJd-yAWNEb-hvhgNd-THI6Vb NMm5M"><path
+                    d="M3 17h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 24s7.09-6.85 7.17-7V4H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2zm16 0h4V4h-4v13z"></path></svg></span>
+                </button>
+            </div>
+        </div>
+        <div id="goog-gt-votingHiddenPane" class="VIpgJd-yAWNEb-hvhgNd-aXYTce">
+            <form id="goog-gt-votingForm" action="https://translate.googleapis.com/translate_voting?client=te_lib"
+                  method="post" target="votingFrame" class="VIpgJd-yAWNEb-hvhgNd-aXYTce"><input type="text" name="sl"
+                                                                                                id="goog-gt-votingInputSrcLang"><input
+                type="text" name="tl" id="goog-gt-votingInputTrgLang"><input type="text" name="query"
+                                                                             id="goog-gt-votingInputSrcText"><input
+                type="text" name="gtrans" id="goog-gt-votingInputTrgText"><input type="text" name="vote"
+                                                                                 id="goog-gt-votingInputVote"></form>
+            <iframe name="votingFrame" frameborder="0" src="./Home_files/saved_resource.html"></iframe>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

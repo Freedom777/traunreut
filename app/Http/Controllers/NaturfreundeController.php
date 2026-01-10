@@ -14,7 +14,12 @@ class NaturfreundeController extends BaseParserController
 
     public function fetchEvents(): array
     {
-        $crawler = $this->client->request('GET', $this->parseConfig['url']);
+        if ($this->localMode) {
+            $html = file_get_contents($this->parseConfig['local_file']);
+            $crawler = new Crawler($html);
+        } else {
+            $crawler = $this->client->request('GET', $this->parseConfig['url']);
+        }
 
         if ($this->parseConfig['parse']['start_block_selector']) {
             $crawler = $crawler->filter($this->parseConfig['parse']['start_block_selector']);

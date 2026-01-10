@@ -2,6 +2,7 @@
 
 return [
     'url' => 'https://www.naturfreunde-traunreut.de/',
+    'local_file' => __DIR__ . '/../../TEST_HTML/naturfreunde_full.html',
     'site' => 'naturfreunde-traunreut.de',
     'city' => 'Traunreut',
     'event_types' => ['Gesundheit & Wellness', 'Naturerlebnisse', 'Sport'],
