@@ -172,7 +172,7 @@ class TelegramWebhookHandler extends WebhookHandler
     {
         try {
             $cities = Event::join('cities', 'events.city_id', '=', 'cities.id')
-                ->select('cities.name as city_name', 'cities.id as city_id')
+                ->select(['cities.name as city_name', 'cities.id as city_id'])
                 ->distinct()
                 ->whereNotNull('events.city_id')
                 ->orderBy('cities.name', 'asc')
@@ -239,10 +239,11 @@ class TelegramWebhookHandler extends WebhookHandler
 
         $events = $query->get();
 
+        $cityName = $city == self::ALL_CITIES
+            ? 'городах'
+            : ('городе ' . ($events->first()->city->name ?? City::find($city)->name ?? 'неизвестном'));
+
         if ($events->isEmpty()) {
-            $cityName = $city == self::ALL_CITIES
-                ? 'городах'
-                : ('городе ' . ($events->first()->city?->name ?? City::find($city)?->name ?? 'неизвестном'));
             $this->chat->message('События в ' . $cityName . ' не найдены.')
                 ->keyboard(Keyboard::make()->button('◀️ Назад')->action('back'))
                 ->send();
@@ -250,9 +251,6 @@ class TelegramWebhookHandler extends WebhookHandler
         }
 
         // Формируем сообщения с событиями
-        $cityName = $city == self::ALL_CITIES
-            ? 'городах'
-            : ('городе ' . ($events->first()->city?->name ?? City::find($city)?->name ?? 'неизвестном'));
         $result = $this->formatEventsMessages(
             $events,
             'События в ' . $cityName,
@@ -404,9 +402,7 @@ class TelegramWebhookHandler extends WebhookHandler
         if (!$includeDate) {
             $title = 'События';
 
-            if ($startDate->isSameDay($endDate)) {
-                // Одиночная дата - описание не нужно
-            } else {
+            if (!$startDate->isSameDay($endDate)) {
                 $title .= ' на период';
             }
 

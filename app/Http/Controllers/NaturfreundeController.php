@@ -43,12 +43,15 @@ class NaturfreundeController extends BaseParserController
                     $this->log('Невозможно определить формат даты события (' . $dateSrc . ').');
                     return null;
                 } else {
-                    $eventId = str_replace('-', '', $startDate);
+                    $eventId = (int) str_replace('-', '', $startDate);
                     if ($this->checkExistEventById($eventId)) {
                         ++$this->duplicateCount;
                         return null;
                     }
                     $title = $this->filterNodeText($node, $sourceParse['title_selector']);
+                    if (preg_match('#([\d]{2})[.:]([\d]{2}) Uhr#', $title, $matches)) {
+                        $startDate .= ' ' . $matches[1] . ':' . $matches[2] . ':00';
+                    }
                     $cityId = $this->getCityId($this->parseConfig['city']);
                     $eventTitleId = $this->getEventTitleId($title);
                     $currentDate = date('Y-m-d H:i:s');
