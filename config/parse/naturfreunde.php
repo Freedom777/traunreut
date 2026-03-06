@@ -6,6 +6,7 @@ return [
     'site' => 'naturfreunde-traunreut.de',
     'city' => 'Traunreut',
     'event_types' => ['Gesundheit & Wellness', 'Naturerlebnisse', 'Sport'],
+    'category' => 'Naturerlebnisse',
     'parse' => [
         'start_block_selector' => 'div.dmRespCol.small-12.medium-6.large-6 > div.dmNewParagraph',
         'event_list_selector' => 'li.m-size-14.size-18',

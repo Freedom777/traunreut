@@ -35,12 +35,14 @@ class ParseCommand extends Command
             case 'traunreut':
             case 'naturfreunde':
             case 'k1':
+            // case 'alpenverein':
                 $this->startParse($siteName);
             break;
             case 'all':
                 $this->startParse('traunreut');
                 $this->startParse('k1');
                 $this->startParse('naturfreunde');
+                // $this->startParse('alpenverein');
             break;
             case 'vocabulary':
                 $this->getVocabulary();

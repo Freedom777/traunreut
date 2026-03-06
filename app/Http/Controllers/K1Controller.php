@@ -12,17 +12,6 @@ class K1Controller extends BaseParserController
 {
     protected string $configPath = 'parse.k1';
 
-    public function fetchEvents(): array
-    {
-        $crawler = $this->client->request('GET', $this->parseConfig['url']);
-
-        if ($this->parseConfig['parse']['start_block_selector']) {
-            $crawler = $crawler->filter($this->parseConfig['parse']['start_block_selector']);
-        }
-
-        return $this->parseEvents($crawler);
-    }
-
     protected function parseEventNode(Crawler $node): ?array
     {
         try {

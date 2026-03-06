@@ -7,6 +7,7 @@ use App\Models\City;
 use App\Models\EventTitle;
 use App\Models\EventType;
 use App\Models\EventTypeKeyword;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\BrowserKit\HttpBrowser;
@@ -17,7 +18,27 @@ abstract class BaseParserController extends Controller
 {
     protected const TITLE_SIMILARITY_THRESHOLD = 90;
 
-    abstract protected function fetchEvents(): array;
+    protected const DEUTSCH_MONTH_NAMES = [
+        'Januar' => 1, 'Februar' => 2, 'März' => 3, 'April' => 4,
+        'Mai' => 5, 'Juni' => 6, 'Juli' => 7, 'August' => 8,
+        'September' => 9, 'Oktober' => 10, 'November' => 11, 'Dezember' => 12
+    ];
+
+    public function fetchEvents(): array
+    {
+        if ($this->localMode) {
+            $html = file_get_contents($this->parseConfig['local_file']);
+            $crawler = new Crawler($html);
+        } else {
+            $crawler = $this->client->request('GET', $this->parseConfig['url']);
+        }
+
+        if ($this->parseConfig['parse']['start_block_selector']) {
+            $crawler = $crawler->filter($this->parseConfig['parse']['start_block_selector']);
+        }
+
+        return $this->parseEvents($crawler);
+    }
 
     public function run()
     {
@@ -105,7 +126,7 @@ abstract class BaseParserController extends Controller
     protected function getProcessedHashEvents() : void {
         $this->processedHashEvents = Event::join('event_titles', 'events.event_title_id', '=', 'event_titles.id')
             ->select(['events.start_date', 'event_titles.title_de', 'events.city_id'])
-            ->where('events.site', $this->parseConfig['site'])
+            ->where('start_date', '>=', Carbon::today())
             ->get()
             ->map(function ($event) {
                 return [
@@ -495,5 +516,44 @@ abstract class BaseParserController extends Controller
     protected function getEventKeywords()
     {
         return EventTypeKeyword::all();
+    }
+
+    protected function parseDeutschDate($dateString, $format = 'Y-m-d'): ?string
+    {
+
+        /*
+            № группы	Что содержит
+            $matches[1]	день недели
+            $matches[2]	Числовой день месяца, старт события
+            $matches[3]	Числовой день месяца, конец события (если есть)
+            $matches[4]	месяц
+            $matches[5]	год
+        */
+        // Проверяем формат строки
+        if (!preg_match('/^(?:(\w+),\s*(?:den\s*)?)?(\d+)(?:\.\s*bis\s*(\d+))?\.\s*(\w+)(?:\s+(\d{4}))?(?:\s+.*)?$/u', $dateString, $matches)) {
+            $this->log('Невозможно обработать строку даты: ' . $dateString);
+            return null; // Формат не соответствует ожидаемому
+        }
+
+        if (!isset(self::DEUTSCH_MONTH_NAMES[$matches[4]])) {
+            return null;
+        }
+
+        try {
+            $date = Carbon::create(
+                $matches[5] ?? now()->year,
+                self::DEUTSCH_MONTH_NAMES[$matches[4]],
+                $matches[2]
+            )->locale('de');
+
+            if (!empty($matches[1]) && $date->isoFormat('dddd') !== $matches[1]) {
+                $date->addYear();
+            }
+
+            return $date->format($format);
+        } catch (\Exception $e) {
+            $this->log('Ошибка при создании даты: ' . $e->getMessage());
+            return null;
+        }
     }
 }
