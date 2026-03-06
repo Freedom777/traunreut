@@ -64,7 +64,7 @@ class TranslateCommand extends Command
             $allTranslations = [];
             foreach (array_chunk($translationValues, self::BATCH_SIZE) as $batch) {
                 $formData = [
-                    'auth_key' => $apiKey,
+                    // 'auth_key' => $apiKey,
                     // 'text' =>  json_encode($batch),
                     'source_lang' => self::SOURCE_LANGUAGE,  // ← исходный язык
                     'target_lang' => self::TARGET_LANGUAGE,  // ← язык перевода
@@ -85,6 +85,7 @@ class TranslateCommand extends Command
                 $queryString = implode('&', $queryParts);
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Authorization' => 'DeepL-Auth-Key ' . $apiKey,
                 ])
                     ->timeout(self::TIMEOUT)
                     ->retry(self::RETRY_TIMES, self::RETRY_DELAY)
