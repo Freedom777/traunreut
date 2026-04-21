@@ -145,7 +145,7 @@ class TestableBaseParserController extends BaseParserController
         return $this->determineEventTypes($category, $title, $description);
     }
 
-    protected function fetchEvents(): array
+    public function fetchEvents(): array
     {
         $this->fetchEventsCalled = true;
         return [['title' => 'Test Event']];

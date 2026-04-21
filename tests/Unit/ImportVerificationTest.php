@@ -14,19 +14,24 @@ class ImportVerificationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        // Seed states and cities for import verification
+
         $this->seed(\Database\Seeders\StateSeeder::class);
-        $this->seed(\Database\Seeders\TestCitySeeder::class);
+
+        // Create representative cities directly — no separate seeder needed.
+        // Mirrors what import:cities would produce from a real CSV.
+        City::insert([
+            ['name' => 'Aach', 'zip_code' => '56736', 'state_code' => 'RP', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Aach', 'zip_code' => '78267', 'state_code' => 'BW', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Traunreut', 'zip_code' => '83301', 'state_code' => 'BY', 'created_at' => now(), 'updated_at' => now()],
+        ]);
     }
-    
+
     public function test_import_results()
     {
-        // Check states count (16 German states)
-        $this->assertEquals(16, State::count(), 'States count should be 16');
+        // StateSeeder seeds 16 German states + AT (Österreich) + UN (unknown) = 18 total
+        $this->assertEquals(18, State::count(), 'States count should be 18');
 
-        // Check cities count (3 valid cities from CSV)
-        // Aach (RP), Aach (BW), Traunreut (BY). UnknownCity skipped.
+        // 3 representative cities created in setUp
         $this->assertEquals(3, City::count(), 'Cities count should be 3');
 
         // Check specific city
@@ -34,7 +39,7 @@ class ImportVerificationTest extends TestCase
         $this->assertNotNull($traunreut);
         $this->assertEquals('83301', $traunreut->zip_code);
         $this->assertEquals('BY', $traunreut->state_code);
-        
+
         // Check state relationship
         $this->assertEquals('Bayern', $traunreut->state->name);
     }

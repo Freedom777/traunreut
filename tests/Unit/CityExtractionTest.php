@@ -86,6 +86,6 @@ class CityExtractionTestController extends BaseParserController
 
 
 
-    protected function fetchEvents(): array { return []; }
+    public function fetchEvents(): array { return []; }
     protected function parseEventNode(\Symfony\Component\DomCrawler\Crawler $node): ?array { return null; }
 }
