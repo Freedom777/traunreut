@@ -5,4 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/telegraph/{token}/webhook', [TelegramWebhookHandler::class, 'handle'])
     ->name('telegraph.webhook')
-    ->where('token', '.*');
+    ->where('token', '.*')
+    ->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class);

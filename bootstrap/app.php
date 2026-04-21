@@ -12,15 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-
         $middleware->alias([
             'log.telegram' => \App\Http\Middleware\LogTelegramRequests::class,
         ]);
-
-        $middleware->validateCsrfTokens(except: [
-            'telegraph/*',
-        ]);
-
         // Доверять Nginx proxy
         $middleware->trustProxies(at: '*');
         // Убираем сессии из API middleware
