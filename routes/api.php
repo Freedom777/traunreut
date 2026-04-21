@@ -31,7 +31,7 @@ Route::get('/telegram/status', function () {
     return response()->json([
         'status' => 'ok',
         'bot' => $bot->name,
-        'webhook_url' => route('telegraph.webhook.custom', $bot->token)
+        'webhook_url' => route('telegraph.webhook', $bot->token)
     ]);
 })->name('telegram.status');
 
@@ -52,7 +52,7 @@ Route::post('/telegram/setup-webhook', function () {
         return response()->json([
             'status' => 'success',
             'message' => 'Webhook registered successfully',
-            'webhook_url' => route('telegraph.webhook.custom', $bot->token)
+            'webhook_url' => route('telegraph.webhook', $bot->token)
         ]);
     } catch (\Exception $e) {
         return response()->json([
