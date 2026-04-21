@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // Доверять Nginx proxy
         $middleware->trustProxies(at: '*');
+        $middleware->preventRequestForgery(except: [
+            'telegraph/*',
+        ]);
         // Убираем сессии из API middleware
         $middleware->api(remove: [
             \Illuminate\Session\Middleware\StartSession::class,
