@@ -15,10 +15,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'log.telegram' => \App\Http\Middleware\LogTelegramRequests::class,
         ]);
-
-        $middleware->validateCsrfTokens(except: [
-            'telegraph/*',
+        $middleware->web(replace: [
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class =>
+                \App\Http\Middleware\VerifyCsrfToken::class,
         ]);
+
+        /*$middleware->validateCsrfTokens(except: [
+            'telegraph/*',
+        ]);*/
 
         // Убираем сессии из API middleware
         $middleware->api(remove: [
