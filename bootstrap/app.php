@@ -10,18 +10,6 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-        then: function () {
-            Route::post('/telegraph/{token}/webhook', [
-                \App\Http\Controllers\Telegram\TelegramWebhookHandler::class, 'handle'
-            ])
-                ->name('telegraph.webhook')
-                ->where('token', '.*')
-                ->withoutMiddleware([
-                    \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
-                    \Illuminate\Session\Middleware\StartSession::class,
-                    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-                ]);
-        }
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
