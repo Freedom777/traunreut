@@ -12,21 +12,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Доверять Nginx proxy
-        $middleware->trustProxies(at: '*');
 
         $middleware->alias([
             'log.telegram' => \App\Http\Middleware\LogTelegramRequests::class,
         ]);
-        $middleware->web(replace: [
-            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class =>
-                \App\Http\Middleware\VerifyCsrfToken::class,
+
+        $middleware->validateCsrfTokens(except: [
+            'telegraph/*',
         ]);
 
-        /*$middleware->validateCsrfTokens(except: [
-            'telegraph/*',
-        ]);*/
-
+        // Доверять Nginx proxy
+        $middleware->trustProxies(at: '*');
         // Убираем сессии из API middleware
         $middleware->api(remove: [
             \Illuminate\Session\Middleware\StartSession::class,
