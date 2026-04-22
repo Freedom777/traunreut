@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // Доверять Nginx proxy
         $middleware->trustProxies(at: '*');
+        $middleware->web(remove: [
+            \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
+        ]);
         /*$middleware->preventRequestForgery(except: [
             'telegraph/*',
         ]);*/
