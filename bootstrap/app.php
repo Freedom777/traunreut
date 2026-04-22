@@ -17,12 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // Доверять Nginx proxy
         $middleware->trustProxies(at: '*');
-        $middleware->web(remove: [
-            \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
-        ]);
-        /*$middleware->preventRequestForgery(except: [
+        // Убираем CSRF для telefraph роутов
+        $middleware->preventRequestForgery(except: [
             'telegraph/*',
-        ]);*/
+        ]);
         // Убираем сессии из API middleware
         $middleware->api(remove: [
             \Illuminate\Session\Middleware\StartSession::class,
